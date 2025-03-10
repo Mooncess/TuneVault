@@ -21,7 +21,7 @@ public class AuthService {
     private final RedisService redisService;
     private final JwtProvider jwtProvider;
 
-    public JwtResponse login(@NonNull JwtRequest authRequest) {
+    public JwtResponse login(@NonNull JwtRequest authRequest) throws AuthException {
         final User user = userService.findByUsername(authRequest.getLogin())
                 .orElseThrow(() -> new AuthException("The user was not found"));
         if (SecurityConfig.passwordEncoder().matches(authRequest.getPassword(), user.getPassword())) {
@@ -66,11 +66,11 @@ public class AuthService {
         throw new AuthException("Invalid JWT token");
     }
 
-    public ResponseEntity<?> createNewUser(@RequestBody RegistrationRequest registrationRequest) {
+    public boolean createNewUser(@RequestBody RegistrationRequest registrationRequest) {
         if (userService.findByUsername(registrationRequest.getUsername()).isPresent()) {
-            return new ResponseEntity<>(new AppError("A user with the specified email address already exists"), HttpStatus.BAD_REQUEST);
+            return false;
         }
         userService.createNewUser(registrationRequest);
-        return ResponseEntity.ok().build();
+        return true;
     }
 }

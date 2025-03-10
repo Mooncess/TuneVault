@@ -4,12 +4,14 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import ru.mooncess.auth_service.domain.JwtRequest;
 import ru.mooncess.auth_service.domain.JwtResponse;
 import ru.mooncess.auth_service.domain.RegistrationRequest;
+import ru.mooncess.auth_service.exception.AppError;
 import ru.mooncess.auth_service.service.AuthService;
 
 @RestController
@@ -23,8 +25,9 @@ public class AuthController {
     public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest authRequest) {
         final JwtResponse token = authService.login(authRequest);
         HttpHeaders headers = new HttpHeaders();
+
         headers.add("Set-Cookie", "access=" + token.getAccessToken() + "; Path=/; Max-Age=3600; HttpOnly");
-        headers.add("Set-Cookie", "refresh=" + token.getRefreshToken() + "; Path=/api/auth; Max-Age=3600; HttpOnly");
+        headers.add("Set-Cookie", "refresh=" + token.getRefreshToken() + "; Path=/api/v1; Max-Age=3600; HttpOnly");
 
         return ResponseEntity.ok()
                 .headers(headers)
@@ -39,7 +42,7 @@ public class AuthController {
         accessCookie.setHttpOnly(true);
 
         Cookie refreshCookie = new Cookie("refresh", null);
-        refreshCookie.setPath("/api/auth");
+        refreshCookie.setPath("/api/v1");
         refreshCookie.setMaxAge(0);
         refreshCookie.setHttpOnly(true);
 
@@ -51,10 +54,14 @@ public class AuthController {
 
     @PostMapping("/registration")
     public ResponseEntity<?> createNewUser(@RequestBody RegistrationRequest registrationRequest) {
-        return authService.createNewUser(registrationRequest);
+        if (authService.createNewUser(registrationRequest)) {
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        } else {
+            return new ResponseEntity<>(new AppError("A user with the specified email address already exists"), HttpStatus.BAD_REQUEST);
+        }
     }
 
-    @PostMapping("token")
+    @PostMapping("/token")
     public ResponseEntity<JwtResponse> getNewAccessToken(HttpServletRequest servletRequest) {
         String refreshToken = getCookieValue(servletRequest);
 
@@ -71,7 +78,7 @@ public class AuthController {
                 .body(token);
     }
 
-    @PostMapping("refresh")
+    @PostMapping("/refresh")
     public ResponseEntity<JwtResponse> getNewRefreshToken(HttpServletRequest servletRequest) {
         String refreshToken = getCookieValue(servletRequest);
         System.out.println(refreshToken);
@@ -85,7 +92,7 @@ public class AuthController {
         HttpHeaders headers = new HttpHeaders();
 
         headers.add("Set-Cookie", "access=" + token.getAccessToken() + "; Path=/; Max-Age=3600; HttpOnly");
-        headers.add("Set-Cookie", "refresh=" + token.getRefreshToken() + "; Path=/api/auth; Max-Age=3600; HttpOnly");
+        headers.add("Set-Cookie", "refresh=" + token.getRefreshToken() + "; Path=/api/v1; Max-Age=3600; HttpOnly");
 
         return ResponseEntity.ok()
                 .headers(headers)

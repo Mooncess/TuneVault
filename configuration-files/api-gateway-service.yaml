@@ -5,7 +5,7 @@ spring:
         - id: auth-service
           uri: lb://AUTH-SERVICE:8099
           predicates:
-            - Path=/api/s1/**
+            - Path=/api/v1/**
   application:
     name: api-gateway-service
 

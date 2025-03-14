@@ -36,8 +36,6 @@ spring:
 #          uri: http://localhost:8082
           predicates:
             - Path=/api/s2/**
-  application:
-    name: api-gateway-service
 
 server:
   port: 9000

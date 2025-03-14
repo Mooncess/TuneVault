@@ -3,10 +3,12 @@ spring:
     gateway:
       routes:
         - id: auth-service
-          # uri: lb://AUTH-SERVICE
-          uri: http://auth-service:8099
+          uri: lb://AUTH-SERVICE
+          # uri: http://auth-service:8099
           predicates:
             - Path=/api/v1/**
+          filters:
+            - Log=true
   application:
     name: api-gateway-service
 

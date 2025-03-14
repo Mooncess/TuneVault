@@ -4,7 +4,6 @@ spring:
       routes:
         - id: auth-service
           uri: lb://AUTH-SERVICE
-          # uri: http://auth-service:8099
           predicates:
             - Path=/api/v1/**
           filters:
@@ -13,7 +12,6 @@ spring:
     name: api-gateway-service
 
 server:
-  port: 8080
   forward-headers-strategy: framework
 
 eureka:

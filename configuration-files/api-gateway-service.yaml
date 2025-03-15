@@ -1,41 +1,11 @@
-# spring:
-#   cloud:
-#     gateway:
-#       routes:
-#         - id: auth-service
-#           uri: lb://AUTH-SERVICE
-#           predicates:
-#             - Path=/api/v1/**
-#           filters:
-#             - Log=true
-#   application:
-#     name: api-gateway-service
-
-# server:
-#   forward-headers-strategy: framework
-
-# eureka:
-#   client:
-#     service-url:
-#       defaultZone: http://localhost:8761/eureka/
-#       instance:
-#         preferIpAddress: true
-
-
 spring:
   cloud:
     gateway:
       routes:
         - id: service-one
           uri: lb://AUTH-SERVICE:8099
-#          uri: http://localhost:8081
           predicates:
             - Path=/api/v1/**
-        - id: service-two
-          uri: lb://SERV-TWO-D:8082
-#          uri: http://localhost:8082
-          predicates:
-            - Path=/api/s2/**
 
 server:
   port: 9000
@@ -44,4 +14,4 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}

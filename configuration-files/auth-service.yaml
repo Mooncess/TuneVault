@@ -4,16 +4,16 @@ spring:
     show-sql: false
     hibernate:
       ddl-auto: update
-  data:
-    redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
-  datasource:
-    url: jdbc:postgresql://${DB_SERVER_URL}
-    username: ${DB_SERVER_USERNAME}
-    password: ${DB_SERVER_PASSWORD}
+#   data:
+#     redis:
+#       host: ${REDIS_HOST}
+#       port: ${REDIS_PORT}
+#   datasource:
+#     url: jdbc:postgresql://${DB_SERVER_URL}
+#     username: ${DB_SERVER_USERNAME}
+#     password: ${DB_SERVER_PASSWORD}
 
-jwt:
-  secret:
-    access: ${JWT_ACCESS}
-    refresh: ${JWT_REFRESH}
+# jwt:
+#   secret:
+#     access: ${JWT_ACCESS}
+#     refresh: ${JWT_REFRESH}

@@ -9,10 +9,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SoundProducerInfo {
+public class ProducerInfo {
     private Long id;
-    private String username;
-    private String firstName;
-    private String lastName;
-    private String phoneNumber;
+    private String email;
+    private String nickname;
 }

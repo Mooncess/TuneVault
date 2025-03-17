@@ -2,10 +2,14 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: service-one
+        - id: auth-service
           uri: lb://AUTH-SERVICE
           predicates:
-            - Path=/api/v1/**
+            - Path=/auth/api/v1/**
+        - id: media-catalog-service
+          uri: lb://MEDIA-CATALOG-SERVICE
+          predicates:
+            - Path=/mcs/api/v1/**
 
 server:
   port: 9000

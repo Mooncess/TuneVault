@@ -3,23 +3,31 @@ package ru.mooncess.auth_service.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import ru.mooncess.auth_service.domain.JwtRequest;
-import ru.mooncess.auth_service.domain.JwtResponse;
-import ru.mooncess.auth_service.domain.RegistrationRequest;
+import ru.mooncess.auth_service.domain.*;
 import ru.mooncess.auth_service.exception.AppError;
 import ru.mooncess.auth_service.service.AuthService;
+import ru.mooncess.auth_service.service.UserService;
+import ru.mooncess.auth_service.clients.MediaCatalogClient;
 
 @RestController
-@RequestMapping("api/v1")
+@RequestMapping("/auth/api/v1")
 @RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
+    private final UserService userService;
+    private final MediaCatalogClient mediaCatalogClient;
+    @Value("${mcs.api.key}")
+    private String secretApiKey;
 
     @PostMapping("login")
     public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest authRequest) {
@@ -36,7 +44,7 @@ public class AuthController {
 
     @GetMapping("logout")
     public ResponseEntity<?> logout(HttpServletResponse response) {
-        Cookie accessCookie = new Cookie("access", null);
+        var accessCookie = new Cookie("access", null);
         accessCookie.setPath("/");
         accessCookie.setMaxAge(0);
         accessCookie.setHttpOnly(true);
@@ -53,14 +61,60 @@ public class AuthController {
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<?> createNewUser(@RequestBody RegistrationRequest registrationRequest) {
-        if (authService.createNewUser(registrationRequest)) {
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        } else {
-            return new ResponseEntity<>(new AppError("A user with the specified email address already exists"), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<?> createNewUser(@RequestBody @Validated RegistrationRequest registrationRequest) {
+        var user = authService.createNewUser(registrationRequest);
+        if (user.isPresent()) {
+            // TO-DO: Необходимо заменить алгоритм ответа в случае недоступности сервиса Media-Catalog-Service
+            ProducerInfo producerInfo = new ProducerInfo();
+            producerInfo.setId(user.get().getId());
+            producerInfo.setNickname(registrationRequest.getNickname());
+            producerInfo.setEmail(registrationRequest.getUsername());
+
+            try {
+                ResponseEntity<Void> status = mediaCatalogClient.registrationNewProducer(producerInfo, secretApiKey);
+                if (status.getStatusCode() == HttpStatus.CREATED)
+                    return ResponseEntity.status(HttpStatus.CREATED).build();
+            } catch (Exception e) {
+                userService.deleteUser(user.get().getUsername());
+                return new ResponseEntity<>(new AppError("The service is temporarily unavailable"), HttpStatus.SERVICE_UNAVAILABLE);
+            }
         }
+        return new ResponseEntity<>(new AppError("A user with the specified email address already exists"), HttpStatus.BAD_REQUEST);
     }
 
+    @PutMapping("/user/update")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<?> updateUser(@RequestBody @Validated UpdateRequest updateRequest,
+                                             Authentication authentication) {
+        ResponseEntity<?> response = userService.updateUser(updateRequest, authentication);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            final JwtResponse token = authService.updateUser(
+                    userService.findByUsername(updateRequest.getUsername()).get(),
+                    authentication.getName());
+
+            HttpHeaders headers = new HttpHeaders();
+
+            headers.add("Set-Cookie", "access=" + token.getAccessToken() + "; Path=/; Max-Age=3600; HttpOnly");
+            headers.add("Set-Cookie", "refresh=" + token.getRefreshToken() + "; Path=/api/v1; Max-Age=3600; HttpOnly");
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(token);
+        }
+        return response;
+    }
+
+    @DeleteMapping("/user/delete")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<?> deleteUser(Authentication authentication, HttpServletResponse response) {
+        System.out.println(authentication.getName());
+        var responseEntity = userService.deleteUser(authentication.getName());
+        System.out.println(responseEntity.getStatusCode());
+        if (responseEntity.getStatusCode() == HttpStatus.NO_CONTENT) {
+            return logout(response);
+        }
+        return responseEntity;
+    }
     @PostMapping("/token")
     public ResponseEntity<JwtResponse> getNewAccessToken(HttpServletRequest servletRequest) {
         String refreshToken = getCookieValue(servletRequest);
@@ -81,7 +135,6 @@ public class AuthController {
     @PostMapping("/refresh")
     public ResponseEntity<JwtResponse> getNewRefreshToken(HttpServletRequest servletRequest) {
         String refreshToken = getCookieValue(servletRequest);
-        System.out.println(refreshToken);
 
         if (refreshToken == null) {
             return ResponseEntity.badRequest().build();

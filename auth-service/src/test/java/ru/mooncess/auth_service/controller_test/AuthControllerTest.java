@@ -26,10 +26,13 @@ import ru.mooncess.auth_service.controller.AuthController;
 import ru.mooncess.auth_service.domain.JwtRequest;
 import ru.mooncess.auth_service.domain.JwtResponse;
 import ru.mooncess.auth_service.domain.RegistrationRequest;
+import ru.mooncess.auth_service.domain.User;
 import ru.mooncess.auth_service.exception.AuthException;
 import ru.mooncess.auth_service.service.AuthService;
 import ru.mooncess.auth_service.service.JwtProvider;
 import ru.mooncess.auth_service.service.UserService;
+
+import java.util.Optional;
 
 @WebMvcTest(AuthController.class)
 @Import(SecurityConfig.class)
@@ -109,13 +112,13 @@ public class AuthControllerTest {
         RegistrationRequest registrationRequest = new RegistrationRequest();
         registrationRequest.setUsername("newuser");
         registrationRequest.setPassword("password123");
-        registrationRequest.setFirstName("TestFirstName");
-        registrationRequest.setLastName("TestLastName");
-        registrationRequest.setPhoneNumber("111");
+        registrationRequest.setNickname("testuser");
+
+        User createdUser = new User();
 
         String requestBody = objectMapper.writeValueAsString(registrationRequest);
 
-        when(authService.createNewUser(any(RegistrationRequest.class))).thenReturn(true);
+        when(authService.createNewUser(any(RegistrationRequest.class))).thenReturn(Optional.of(createdUser));
 
         mockMvc.perform(post("/api/v1/registration")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -128,13 +131,11 @@ public class AuthControllerTest {
         RegistrationRequest registrationRequest = new RegistrationRequest();
         registrationRequest.setUsername("newuser");
         registrationRequest.setPassword("password123");
-        registrationRequest.setFirstName("TestFirstName");
-        registrationRequest.setLastName("TestLastName");
-        registrationRequest.setPhoneNumber("111");
+        registrationRequest.setNickname("test");
 
         String requestBody = objectMapper.writeValueAsString(registrationRequest);
 
-        when(authService.createNewUser(any(RegistrationRequest.class))).thenReturn(false);
+        when(authService.createNewUser(any(RegistrationRequest.class))).thenReturn(Optional.empty());
 
         mockMvc.perform(post("/api/v1//registration")
                         .contentType(MediaType.APPLICATION_JSON)

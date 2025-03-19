@@ -12,6 +12,8 @@ import ru.mooncess.auth_service.domain.*;
 import ru.mooncess.auth_service.exception.AppError;
 import ru.mooncess.auth_service.exception.AuthException;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -66,11 +68,18 @@ public class AuthService {
         throw new AuthException("Invalid JWT token");
     }
 
-    public boolean createNewUser(@RequestBody RegistrationRequest registrationRequest) {
+    public Optional<User> createNewUser(@RequestBody RegistrationRequest registrationRequest) {
         if (userService.findByUsername(registrationRequest.getUsername()).isPresent()) {
-            return false;
+            return Optional.empty();
         }
-        userService.createNewUser(registrationRequest);
-        return true;
+        return Optional.of(userService.createNewUser(registrationRequest));
+    }
+
+    public JwtResponse updateUser(User user, String oldUsername) {
+        final String accessToken = jwtProvider.generateAccessToken(user);
+        final String refreshToken = jwtProvider.generateRefreshToken(user);
+        redisService.delete(oldUsername);
+        redisService.save(user.getUsername(), refreshToken);
+        return new JwtResponse(accessToken, refreshToken);
     }
 }

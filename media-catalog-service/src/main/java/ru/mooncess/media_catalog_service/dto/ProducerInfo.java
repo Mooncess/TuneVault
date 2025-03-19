@@ -1,11 +1,10 @@
-package ru.mooncess.auth_service.domain;
+package ru.mooncess.media_catalog_service.dto;
 
+import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.Date;
 
 @Getter
 @Setter
@@ -14,5 +13,6 @@ import java.util.Date;
 public class ProducerInfo {
     private Long id;
     private String nickname;
+    @Email
     private String email;
 }

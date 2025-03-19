@@ -1,4 +1,4 @@
-package ru.mooncess.auth_service.config;
+package ru.mooncess.media_catalog_service.configs;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -12,7 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import ru.mooncess.auth_service.filter.JwtFilter;
+import ru.mooncess.media_catalog_service.filter.JwtFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -27,8 +27,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers("/auth/api/v1/login", "/auth/api/v1/token", "/auth/api/v1/registration").permitAll()
-                        .anyRequest().authenticated())
+                        .anyRequest().permitAll())
                 .addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .rememberMe(Customizer.withDefaults());
 

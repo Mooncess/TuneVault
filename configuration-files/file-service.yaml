@@ -3,7 +3,7 @@ minio:
   accessKey: ${MINIO_S3_ACCESS:minio12345}
   secretKey: ${MINIO_S3_SECRET:minio12345}
   secure: false
-  backet:
+  bucket:
     logo: logo
     demo: demo
     source: source

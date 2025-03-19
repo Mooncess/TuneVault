@@ -1,0 +1,17 @@
+minio:
+  url: ${MINIO_S3_URL:localhost}
+  accessKey: ${MINIO_S3_ACCESS:minio12345}
+  secretKey: ${MINIO_S3_SECRET:minio12345}
+  secure: false
+  backet:
+    logo: logo
+    demo: demo
+    source: source
+
+server:
+  port: 8083
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}

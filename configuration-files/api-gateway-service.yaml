@@ -12,7 +12,7 @@ spring:
             - Path=/mcs/**
 
 server:
-  port: 9000
+  port: 8080
   forward-headers-strategy: framework
 
 eureka:

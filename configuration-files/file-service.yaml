@@ -1,5 +1,5 @@
 minio:
-  url: ${MINIO_S3_URL:localhost:9000}
+  url: ${MINIO_S3_URL:http://localhost:9000}
   accessKey: ${MINIO_S3_ACCESS:minio12345}
   secretKey: ${MINIO_S3_SECRET:minio12345}
   secure: false

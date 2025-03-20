@@ -4,9 +4,9 @@ minio:
   secretKey: ${MINIO_S3_SECRET:minio12345}
   secure: false
   bucket:
-    logo: logo
-    demo: demo
-    source: source
+    logo: ${BUCKET_LOGO:logo}
+    demo: ${BUCKET_DEMO:demo}
+    source: ${BUCKET_SOURCE:source}
 
 server:
   port: 8083

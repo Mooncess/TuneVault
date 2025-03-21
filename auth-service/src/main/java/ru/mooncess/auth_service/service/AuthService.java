@@ -68,11 +68,8 @@ public class AuthService {
         throw new AuthException("Invalid JWT token");
     }
 
-    public Optional<User> createNewUser(@RequestBody RegistrationRequest registrationRequest) {
-        if (userService.findByUsername(registrationRequest.getUsername()).isPresent()) {
-            return Optional.empty();
-        }
-        return Optional.of(userService.createNewUser(registrationRequest));
+    public Optional<User> createNewUser(@RequestBody RegistrationRequest registrationRequest, long id) {
+        return Optional.of(userService.createNewUser(registrationRequest, id));
     }
 
     public JwtResponse updateUser(User user, String oldUsername) {

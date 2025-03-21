@@ -2,7 +2,7 @@ package ru.mooncess.media_catalog_service.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.mooncess.media_catalog_service.domain.Status;
+import ru.mooncess.media_catalog_service.domain.UserStatus;
 import ru.mooncess.media_catalog_service.dto.ProducerInfo;
 import ru.mooncess.media_catalog_service.dto.UpdateProducerInfo;
 import ru.mooncess.media_catalog_service.entities.Producer;
@@ -17,14 +17,19 @@ import java.util.Optional;
 public class ProducerService {
     private final ProducerRepository producerRepository;
 
-    public void createNewProducer(ProducerInfo producerInfo) {
-        Producer producer = new Producer();
-        producer.setId(producerInfo.getId());
-        producer.setNickname(producerInfo.getNickname());
-        producer.setStatus(Status.ACTIVE);
-        producer.setRegistrationDate(LocalDate.now());
-        producer.setEmail(producerInfo.getEmail());
-        producerRepository.save(producer);
+    public boolean createNewProducer(ProducerInfo producerInfo) {
+        Optional<Producer> optionalProducer = producerRepository.findByEmail(producerInfo.getEmail());
+        if (optionalProducer.isEmpty()) {
+            Producer producer = new Producer();
+            producer.setNickname(producerInfo.getNickname());
+            producer.setUserStatus(UserStatus.ACTIVE);
+            producer.setRegistrationDate(LocalDate.now());
+            producer.setEmail(producerInfo.getEmail());
+            producerRepository.save(producer);
+            return true;
+        }
+
+        return false;
     }
 
     public boolean updateProducer(UpdateProducerInfo updateProducerInfo) throws RuntimeException{
@@ -56,5 +61,9 @@ public class ProducerService {
 
     public void deleteProducer(Long id) {
         producerRepository.deleteById(id);
+    }
+
+    public Optional<Producer> findByEmail(String email) {
+        return producerRepository.findByEmail(email);
     }
 }

@@ -43,8 +43,9 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    public User createNewUser(RegistrationRequest registrationUserDto) {
+    public User createNewUser(RegistrationRequest registrationUserDto, long id) {
         var user = new User();
+        user.setId(id);
         user.setUsername(registrationUserDto.getUsername());
         user.setPassword(passwordEncoder.encode(registrationUserDto.getPassword()));
         user.setRole(Role.USER);

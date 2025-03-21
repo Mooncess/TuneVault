@@ -62,24 +62,20 @@ public class AuthController {
 
     @PostMapping("/registration")
     public ResponseEntity<?> createNewUser(@RequestBody @Validated RegistrationRequest registrationRequest) {
-        var user = authService.createNewUser(registrationRequest);
-        if (user.isPresent()) {
-            // TO-DO: Необходимо заменить алгоритм ответа в случае недоступности сервиса Media-Catalog-Service
-            ProducerInfo producerInfo = new ProducerInfo();
-            producerInfo.setId(user.get().getId());
-            producerInfo.setNickname(registrationRequest.getNickname());
-            producerInfo.setEmail(registrationRequest.getUsername());
+        ProducerInfo producerInfo = new ProducerInfo();
+        producerInfo.setNickname(registrationRequest.getNickname());
+        producerInfo.setEmail(registrationRequest.getUsername());
 
-            try {
-                ResponseEntity<Void> status = mediaCatalogClient.registrationNewProducer(producerInfo, secretApiKey);
-                if (status.getStatusCode() == HttpStatus.CREATED)
-                    return ResponseEntity.status(HttpStatus.CREATED).build();
-            } catch (Exception e) {
-                userService.deleteUser(user.get().getUsername());
-                return new ResponseEntity<>(new AppError("The service is temporarily unavailable"), HttpStatus.SERVICE_UNAVAILABLE);
+        try {
+            ResponseEntity<Long> response = mediaCatalogClient.registrationNewProducer(producerInfo, secretApiKey);
+            if (response.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                return new ResponseEntity<>(new AppError("A user with the specified email address already exists"), HttpStatus.BAD_REQUEST);
             }
+            authService.createNewUser(registrationRequest, response.getBody());
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        } catch (Exception e) {
+            return new ResponseEntity<>(new AppError("The service is temporarily unavailable"), HttpStatus.SERVICE_UNAVAILABLE);
         }
-        return new ResponseEntity<>(new AppError("A user with the specified email address already exists"), HttpStatus.BAD_REQUEST);
     }
 
     @PutMapping("/user/update")

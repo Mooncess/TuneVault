@@ -8,7 +8,7 @@ import ru.mooncess.auth_service.domain.ProducerInfo;
 @FeignClient(name = "MEDIA-CATALOG-SERVICE")
 public interface MediaCatalogClient {
     @PostMapping("/internal/mcs/producer/api/v1/registration")
-    ResponseEntity<Void> registrationNewProducer(@RequestBody ProducerInfo producerInfo,
+    ResponseEntity<Long> registrationNewProducer(@RequestBody ProducerInfo producerInfo,
                                                  @RequestHeader("X-API-Key") String apiKey);
 
     @PutMapping("/internal/mcs/producer/api/v1/updateEmail")

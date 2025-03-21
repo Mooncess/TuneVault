@@ -4,12 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.mooncess.media_catalog_service.dto.ProducerInfo;
-import ru.mooncess.media_catalog_service.dto.UpdateProducerInfo;
 import ru.mooncess.media_catalog_service.services.ProducerService;
 
 @RestController
@@ -21,24 +18,23 @@ public class AuthController {
     private String secretApiKey;
 
     @PostMapping("/registration")
-    ResponseEntity<Void> registrationNewProducer(@RequestBody @Validated ProducerInfo producerInfo,
+    ResponseEntity<Long> registrationNewProducer(@RequestBody @Validated ProducerInfo producerInfo,
                                                  @RequestHeader("X-API-Key") String apiKey) {
-        System.out.println("REG REQ : " + apiKey);
-
         if (!isValidApiKey(apiKey)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        producerService.createNewProducer(producerInfo);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        if (producerService.createNewProducer(producerInfo)) {
+            long id = producerService.findByEmail(producerInfo.getEmail()).orElseThrow().getId();
+            return ResponseEntity.status(HttpStatus.CREATED).body(id);
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     @PutMapping("/updateEmail")
     ResponseEntity<Void> updateEmailOfProducer(@RequestParam String newEmail,
                                                @RequestParam String oldEmail,
                                                @RequestHeader("X-API-Key") String apiKey) {
-        System.out.println("UPDATE REQ : " + apiKey);
-
         if (!isValidApiKey(apiKey)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -50,8 +46,6 @@ public class AuthController {
     @DeleteMapping("/delete")
     ResponseEntity<Void> deleteProducer(@RequestParam Long id,
                                         @RequestHeader("X-API-Key") String apiKey) {
-        System.out.println("DELETE REQ : " + apiKey);
-
         if (!isValidApiKey(apiKey)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }

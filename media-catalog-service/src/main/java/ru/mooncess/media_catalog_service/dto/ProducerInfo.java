@@ -11,7 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProducerInfo {
-    private Long id;
     private String nickname;
     @Email
     private String email;

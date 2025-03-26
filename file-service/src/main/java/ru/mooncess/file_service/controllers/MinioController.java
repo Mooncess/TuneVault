@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.mooncess.file_service.clients.MediaCatalogClient;
 import ru.mooncess.file_service.components.MinioComponent;
 import ru.mooncess.file_service.domain.JtwInfo;
+import ru.mooncess.file_service.domain.MusicFileURI;
 import ru.mooncess.file_service.domain.MusicResourceBaseInfo;
 import ru.mooncess.file_service.domain.MusicResourceInfo;
 import ru.mooncess.file_service.mapper.MusicResourceMapper;
@@ -38,6 +39,8 @@ public class MinioController {
     private String demoBucket;
     @Value("${minio.bucket.source}")
     private String sourceBucket;
+    @Value("${music.resource.default.logo.uri}")
+    private String defaultLogoURI;
 
     @PostMapping("/upload")
     public ResponseEntity<?> uploadMusicResource(@RequestPart @Validated MusicResourceBaseInfo musicResourceBaseInfo,
@@ -47,30 +50,172 @@ public class MinioController {
                                                  HttpServletRequest httpRequest) {
         JtwInfo jwtInfo = jwtChecker.checkToken(httpRequest);
 
-        if (jwtInfo == null || jwtInfo.getRole() == null || !jwtInfo.getRole().equals("USER")) {
+        if (isValidUser(jwtInfo)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         MusicResourceInfo musicResourceInfo = mapper.map(musicResourceBaseInfo);
 
-        String logoURI = minioComponent.generateUniqueFileName(logo, musicResourceBaseInfo.getName());
-        String demoURI = minioComponent.generateUniqueFileName(demo, musicResourceBaseInfo.getName());
-        String sourceURI = minioComponent.generateUniqueFileName(source, musicResourceBaseInfo.getName());
+        String logoURI = minioComponent.generateUniqueFileName(logo);
+        String demoURI = minioComponent.generateUniqueFileName(demo);
+        String sourceURI = minioComponent.generateUniqueFileName(source);
 
         musicResourceInfo.setLogoURI(logoURI);
         musicResourceInfo.setDemoURI(demoURI);
         musicResourceInfo.setSourceURI(sourceURI);
 
-        if (mediaCatalogClient.createNewMusicResource(musicResourceInfo, secretApiKey).getStatusCode() == HttpStatus.CREATED) {
-            minioComponent.putResource(logo, logoURI, logoBucket);
-            minioComponent.putResource(demo, demoURI, demoBucket);
-            minioComponent.putResource(source, sourceURI, sourceBucket);
+        try {
+            if (mediaCatalogClient.createNewMusicResource(musicResourceInfo, jwtInfo.getUsername(), secretApiKey).getStatusCode() == HttpStatus.CREATED) {
+                minioComponent.putResource(logo, logoURI, logoBucket);
+                minioComponent.putResource(demo, demoURI, demoBucket);
+                minioComponent.putResource(source, sourceURI, sourceBucket);
 
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+                return ResponseEntity.status(HttpStatus.CREATED).build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateMusicResource(
+            @PathVariable Long id,
+            @RequestPart(required = false) MultipartFile logo,
+            @RequestPart(required = false) MultipartFile demo,
+            @RequestPart(required = false) MultipartFile source,
+            HttpServletRequest httpRequest) {
+
+        JtwInfo jwtInfo = jwtChecker.checkToken(httpRequest);
+        if (!isValidUser(jwtInfo)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        try {
+            mediaCatalogClient.checkOwner(
+                    id, jwtInfo.getUsername(), secretApiKey
+            );
+
+            MusicFileURI musicFileURI = createMusicFileURI(logo, demo, source);
+            ResponseEntity<?> updateResponse = mediaCatalogClient.updateFilesOfMusicResource(
+                    id, musicFileURI, secretApiKey
+            );
+
+            if (updateResponse.getStatusCode() != HttpStatus.OK) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+
+            uploadFilesToStorage(logo, demo, source, musicFileURI);
+            return ResponseEntity.ok().build();
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @DeleteMapping("/delete-logo/{id}")
+    public ResponseEntity<?> deleteLogo(
+            @PathVariable Long id,
+            HttpServletRequest httpRequest) {
+
+        JtwInfo jwtInfo = jwtChecker.checkToken(httpRequest);
+        if (!isValidUser(jwtInfo)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        try {
+            minioComponent.deleteFile(
+                    mediaCatalogClient
+                            .deleteLogo(id, jwtInfo.getUsername(), defaultLogoURI, secretApiKey)
+                            .getBody(), logoBucket);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @DeleteMapping("/delete-demo/{id}")
+    public ResponseEntity<?> deleteDemo(
+            @PathVariable Long id,
+            HttpServletRequest httpRequest) {
+
+        JtwInfo jwtInfo = jwtChecker.checkToken(httpRequest);
+        if (!isValidUser(jwtInfo)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        try {
+            minioComponent.deleteFile(
+                    mediaCatalogClient
+                            .deleteDemo(id, jwtInfo.getUsername(), secretApiKey)
+                            .getBody(), demoBucket);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    private boolean isValidUser(JtwInfo jwtInfo) {
+        return jwtInfo != null && jwtInfo.getRole() != null && jwtInfo.getRole().equals("USER");
+    }
+
+    private MusicFileURI createMusicFileURI(MultipartFile logo, MultipartFile demo, MultipartFile source) {
+        MusicFileURI musicFileURI = new MusicFileURI();
+        if (logo != null) musicFileURI.setLogoURI(minioComponent.generateUniqueFileName(logo));
+        if (demo != null) musicFileURI.setDemoURI(minioComponent.generateUniqueFileName(demo));
+        if (source != null) musicFileURI.setSourceURI(minioComponent.generateUniqueFileName(source));
+        return musicFileURI;
+    }
+
+    private void uploadFilesToStorage(
+            MultipartFile logo,
+            MultipartFile demo,
+            MultipartFile source,
+            MusicFileURI musicFileURI) {
+        if (logo != null) {
+            minioComponent.putResource(logo, musicFileURI.getLogoURI(), logoBucket);
+        }
+        if (demo != null) {
+            minioComponent.putResource(demo, musicFileURI.getDemoURI(), demoBucket);
+        }
+        if (source != null) {
+            minioComponent.putResource(source, musicFileURI.getSourceURI(), sourceBucket);
+        }
+    }
+
+//    @PostMapping("/update/{id}")
+//    public ResponseEntity<?> updateMusicResource(@RequestPart @Validated MusicResourceBaseInfo musicResourceBaseInfo,
+//                                                 @RequestPart(required = false) MultipartFile logo,
+//                                                 @RequestPart(required = false) MultipartFile demo,
+//                                                 @RequestPart MultipartFile source,
+//                                                 HttpServletRequest httpRequest) {
+//        JtwInfo jwtInfo = jwtChecker.checkToken(httpRequest);
+//
+//        if (jwtInfo == null || jwtInfo.getRole() == null || !jwtInfo.getRole().equals("USER")) {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+//        }
+//
+//        MusicResourceInfo musicResourceInfo = mapper.map(musicResourceBaseInfo);
+//
+//        String logoURI = minioComponent.generateUniqueFileName(logo, musicResourceBaseInfo.getName());
+//        String demoURI = minioComponent.generateUniqueFileName(demo, musicResourceBaseInfo.getName());
+//        String sourceURI = minioComponent.generateUniqueFileName(source, musicResourceBaseInfo.getName());
+//
+//        musicResourceInfo.setLogoURI(logoURI);
+//        musicResourceInfo.setDemoURI(demoURI);
+//        musicResourceInfo.setSourceURI(sourceURI);
+//
+//        if (mediaCatalogClient.createNewMusicResource(musicResourceInfo,jwtInfo.getUsername(), secretApiKey).getStatusCode() == HttpStatus.CREATED) {
+//            minioComponent.putResource(logo, logoURI, logoBucket);
+//            minioComponent.putResource(demo, demoURI, demoBucket);
+//            minioComponent.putResource(source, sourceURI, sourceBucket);
+//
+//            return ResponseEntity.status(HttpStatus.CREATED).build();
+//        }
+//
+//        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+//    }
 
 //    @PostMapping("/upload")
 //    public String uploadFileToMinIO(@RequestParam("file") MultipartFile file) {

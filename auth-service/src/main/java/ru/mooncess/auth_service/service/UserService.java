@@ -1,22 +1,20 @@
 package ru.mooncess.auth_service.service;
 
-import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 import ru.mooncess.auth_service.domain.*;
 import ru.mooncess.auth_service.exception.AppError;
 import ru.mooncess.auth_service.repository.UserRepository;
 import ru.mooncess.auth_service.clients.MediaCatalogClient;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -48,51 +46,55 @@ public class UserService {
         user.setId(id);
         user.setUsername(registrationUserDto.getUsername());
         user.setPassword(passwordEncoder.encode(registrationUserDto.getPassword()));
-        user.setRole(Role.USER);
+        user.setRole(Role.ADMIN);
         user.setStatus(Status.ACTIVE);
         return userRepository.save(user);
     }
 
-    public ResponseEntity<?> updateUser(UpdateRequest updateRequest, Authentication authentication) throws RuntimeException{
+    public ResponseEntity<?> updateUser(String newEmail, String newPassword, Authentication authentication) throws RuntimeException{
         Optional<User> optionalUser = userRepository.findByUsername(authentication.getName());
         if (optionalUser.isEmpty()) return ResponseEntity.badRequest().build();
         User user = optionalUser.get();
 
-        if (updateRequest.getUsername() != null && !updateRequest.getUsername().equals(authentication.getName())) {
-            if (userRepository.existsByUsername(updateRequest.getUsername())) {
+        if (newEmail != null && !newEmail.equals(authentication.getName())) {
+            if (userRepository.existsByUsername(newEmail)) {
                 return ResponseEntity.status(HttpStatusCode.valueOf(409)).build();
             }
 
             try {
-                ResponseEntity<Void> status = mediaCatalogClient.updateEmailOfProducer(updateRequest.getUsername(), authentication.getName(), secretApiKey);
+                ResponseEntity<Void> status = mediaCatalogClient.updateEmailOfProducer(newEmail, authentication.getName(), secretApiKey);
                 if (status.getStatusCode() == HttpStatus.OK)
-                    user.setUsername(updateRequest.getUsername());
+                    user.setUsername(newEmail);
             } catch (Exception e) {
                 return new ResponseEntity<>(new AppError("The service is temporarily unavailable"), HttpStatus.SERVICE_UNAVAILABLE);
             }
         }
 
-        if (updateRequest.getPassword() != null) {
-            user.setPassword(passwordEncoder.encode(updateRequest.getPassword()));
+        if (newPassword != null) {
+            user.setPassword(passwordEncoder.encode(newPassword));
         }
 
         userRepository.saveAndFlush(user);
         return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity<?> deleteUser(String username) {
-        var user = userRepository.findByUsername(username);
-        if (user.isPresent()) {
-            try {
-                System.out.println("OPA");
-                ResponseEntity<Void> status = mediaCatalogClient.deleteProducer(user.get().getId(), secretApiKey);
-                System.out.println(status.getStatusCode());
-                if (status.getStatusCode() == HttpStatus.NO_CONTENT)
-                    userRepository.delete(user.get());
-            } catch (Exception e) {
-                return new ResponseEntity<>(new AppError("The service is temporarily unavailable"), HttpStatus.SERVICE_UNAVAILABLE);
-            }
+    public List<User> findAllUsers() {
+        return userRepository.findAll();
+    }
+
+    public Optional<User> findUserById(Long id) {
+        return userRepository.findById(id);
+    }
+
+    public ResponseEntity<?> deleteUserRequest(Long id) {
+        try {
+            return mediaCatalogClient.deleteProducer(id, secretApiKey);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new AppError("The service is temporarily unavailable"), HttpStatus.SERVICE_UNAVAILABLE);
         }
-        return ResponseEntity.noContent().build();
+    }
+
+    public void delete(User user) {
+        userRepository.delete(user);
     }
 }

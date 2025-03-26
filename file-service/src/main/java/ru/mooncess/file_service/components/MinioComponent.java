@@ -23,6 +23,7 @@ public class MinioComponent {
     private String demo;
     @Value("${minio.bucket.source}")
     private String source;
+
     private final MinioClient minioClient;
 
     @Autowired
@@ -49,15 +50,13 @@ public class MinioComponent {
         }
     }
 
-    public String putResource(MultipartFile file, String uniqueFileName, String bucket) {
+    public void putResource(MultipartFile file, String uniqueFileName, String bucket) {
         try {
             InputStream in = new ByteArrayInputStream(file.getBytes());
             putObject(uniqueFileName, in, bucket);
-            return uniqueFileName;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
 
     public void putObject(String objectName, InputStream inputStream, String bucketName) {
@@ -94,7 +93,23 @@ public class MinioComponent {
         return new byte[0];
     }
 
-    public String generateUniqueFileName(MultipartFile file, String name) {
+    public boolean compareExtension(String file1, String file2) {
+        return file1.substring(file1.lastIndexOf(".")).equals(file2.substring(file2.lastIndexOf(".")));
+    }
+
+    public void overwriteFile(MultipartFile file, String oldFileName, String bucket) {
+        try {
+            String uniqueFileName = oldFileName.substring(0, oldFileName.lastIndexOf(".")) +
+                    file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+            InputStream in = new ByteArrayInputStream(file.getBytes());
+            putObject(uniqueFileName, in, bucket);
+            deleteFile(oldFileName, bucket);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String generateUniqueFileName(MultipartFile file) {
         if (file == null) {
             return "";
         }
@@ -106,6 +121,24 @@ public class MinioComponent {
         }
 
         String uniqueID = UUID.randomUUID().toString();
-        return name + "_" + uniqueID + fileExtension;
+        return uniqueID + fileExtension;
+    }
+
+    public boolean deleteFile(String objectName, String bucketName) {
+        try {
+            minioClient.removeObject(
+                    RemoveObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(objectName)
+                            .build()
+            );
+            return true;
+        } catch (ErrorResponseException e) {
+            System.err.println("Ошибка при удалении файла: файл не найден");
+        } catch (Exception e) {
+            System.err.println("Ошибка при удалении файла: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
     }
 }

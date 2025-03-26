@@ -10,9 +10,9 @@ import ru.mooncess.media_catalog_service.dto.ProducerInfo;
 import ru.mooncess.media_catalog_service.services.ProducerService;
 
 @RestController
-@RequestMapping("/internal/mcs/producer/api/v1")
+@RequestMapping("/internal/mcs/api/v1/producer")
 @RequiredArgsConstructor
-public class AuthController {
+public class InternalAuthController {
     private final ProducerService producerService;
     @Value("${mcs.api.key}")
     private String secretApiKey;

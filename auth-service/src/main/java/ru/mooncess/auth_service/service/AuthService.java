@@ -79,4 +79,20 @@ public class AuthService {
         redisService.save(user.getUsername(), refreshToken);
         return new JwtResponse(accessToken, refreshToken);
     }
+
+    public ResponseEntity<?> deleteUser(String username) {
+        var user = userService.findByUsername(username);
+        if (user.isPresent()) {
+            try {
+                ResponseEntity<?> status = userService.deleteUserRequest(user.get().getId());
+                if (status.getStatusCode() == HttpStatus.NO_CONTENT) {
+                    userService.delete(user.get());
+                    redisService.delete(user.get().getUsername());
+                }
+            } catch (Exception e) {
+                return new ResponseEntity<>(new AppError("The service is temporarily unavailable"), HttpStatus.SERVICE_UNAVAILABLE);
+            }
+        }
+        return ResponseEntity.noContent().build();
+    }
 }

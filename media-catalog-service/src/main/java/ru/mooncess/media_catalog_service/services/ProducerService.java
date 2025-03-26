@@ -32,8 +32,8 @@ public class ProducerService {
         return false;
     }
 
-    public boolean updateProducer(UpdateProducerInfo updateProducerInfo) throws RuntimeException{
-        Optional<Producer> optionalProducer = producerRepository.findByEmail(updateProducerInfo.getEmail());
+    public boolean updateProducer(UpdateProducerInfo updateProducerInfo, String email) throws RuntimeException{
+        Optional<Producer> optionalProducer = producerRepository.findByEmail(email);
         if (optionalProducer.isEmpty()) return false;
         Producer producer = optionalProducer.get();
 
@@ -42,7 +42,7 @@ public class ProducerService {
         }
 
         if (updateProducerInfo.getNickname() != null) {
-            producer.setAbout(updateProducerInfo.getNickname());
+            producer.setNickname(updateProducerInfo.getNickname());
         }
 
         producerRepository.save(producer);
@@ -65,5 +65,13 @@ public class ProducerService {
 
     public Optional<Producer> findByEmail(String email) {
         return producerRepository.findByEmail(email);
+    }
+
+    public Optional<Producer> findById(Long id) {
+        return producerRepository.findById(id);
+    }
+
+    public List<Producer> findProducersByNicknamePart(String nicknamePart) {
+        return producerRepository.findAllByNicknameContainingIgnoreCase(nicknamePart);
     }
 }

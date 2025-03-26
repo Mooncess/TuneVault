@@ -7,8 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UpdateProducerInfo {
-    @Email
-    private String email;
     private String nickname;
     private String about;
 }

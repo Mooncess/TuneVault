@@ -3,6 +3,7 @@ package ru.mooncess.auth_service.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -79,14 +80,15 @@ public class AuthController {
     }
 
     @PutMapping("/user/update")
-    @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<?> updateUser(@RequestBody @Validated UpdateRequest updateRequest,
-                                             Authentication authentication) {
-        ResponseEntity<?> response = userService.updateUser(updateRequest, authentication);
+    @PreAuthorize("hasAuthority('USER') || hasAuthority('ADMIN')")
+    public ResponseEntity<?> updateUser(@RequestParam(required = false) @Email @Validated String email,
+                                        @RequestParam(required = false) String password,
+                                        Authentication authentication) {
+        ResponseEntity<?> response = userService.updateUser(email, password, authentication);
         if (response.getStatusCode() == HttpStatus.OK) {
-            final JwtResponse token = authService.updateUser(
-                    userService.findByUsername(updateRequest.getUsername()).get(),
-                    authentication.getName());
+            final JwtResponse token;
+            if (email != null) token = authService.updateUser(userService.findByUsername(email).get(), authentication.getName());
+            else token = authService.updateUser(userService.findByUsername(authentication.getName()).get(), authentication.getName());
 
             HttpHeaders headers = new HttpHeaders();
 
@@ -103,9 +105,7 @@ public class AuthController {
     @DeleteMapping("/user/delete")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<?> deleteUser(Authentication authentication, HttpServletResponse response) {
-        System.out.println(authentication.getName());
-        var responseEntity = userService.deleteUser(authentication.getName());
-        System.out.println(responseEntity.getStatusCode());
+        var responseEntity = authService.deleteUser(authentication.getName());
         if (responseEntity.getStatusCode() == HttpStatus.NO_CONTENT) {
             return logout(response);
         }

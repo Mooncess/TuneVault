@@ -1,31 +1,43 @@
 package ru.mooncess.media_catalog_service.controllers;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.mooncess.media_catalog_service.dto.UpdateProducerInfo;
+import ru.mooncess.media_catalog_service.entities.Producer;
 import ru.mooncess.media_catalog_service.services.ProducerService;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/mcs/producer/api/v1")
+@RequestMapping("/mcs/api/v1/producer")
 @RequiredArgsConstructor
 public class ProducerController {
     private final ProducerService producerService;
 
-    @GetMapping("/hello")
+    @PutMapping("/update-info")
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<String> helloString(Authentication authentication) {
-        return ResponseEntity.ok("Hello!");
-    }
-
-    @PostMapping("/update-info/{id}")
-    @PreAuthorize("hasAuthority('USER') and #authentication.name == @producerRepository.findByEmail(#updateProducerInfo.email).orElseThrow().email")
     ResponseEntity<?> updateProducer(@RequestBody @Validated UpdateProducerInfo updateProducerInfo,
                                      Authentication authentication) {
-        if (producerService.updateProducer(updateProducerInfo)) return ResponseEntity.ok().build();
+        if (producerService.updateProducer(updateProducerInfo, authentication.getName())) return ResponseEntity.ok().build();
         return ResponseEntity.badRequest().build();
+    }
+
+    @GetMapping("/all")
+    ResponseEntity<List<Producer>> findAllProducers(@RequestParam(required = false) String nickname) {
+        if (nickname == null) return ResponseEntity.ok(producerService.findAllProducers());
+        else return ResponseEntity.ok(producerService.findProducersByNicknamePart(nickname));
+
+    }
+
+    @GetMapping("/{id}")
+    ResponseEntity<Producer> findProducerById(@PathVariable Long id) {
+        return producerService.findById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 }

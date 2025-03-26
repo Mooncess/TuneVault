@@ -55,7 +55,6 @@ public final class JwtChecker {
 
     private static JtwInfo createJwtInfoToken(Claims claims) {
         JtwInfo jwtInfo = new JtwInfo();
-        System.out.println(claims);
         jwtInfo.setRole(claims.get("role", String.class));
         jwtInfo.setUsername(claims.get("sub", String.class));
         return jwtInfo;

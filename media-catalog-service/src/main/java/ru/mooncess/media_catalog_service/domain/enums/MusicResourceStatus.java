@@ -1,4 +1,4 @@
-package ru.mooncess.media_catalog_service.domain;
+package ru.mooncess.media_catalog_service.domain.enums;
 
 import lombok.RequiredArgsConstructor;
 

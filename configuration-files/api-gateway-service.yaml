@@ -9,7 +9,7 @@ spring:
         - id: media-catalog-service
           uri: lb://MEDIA-CATALOG-SERVICE
           predicates:
-            - Path=/mcs/**
+            - Path=/mcs/api/v1/****
 
 server:
   port: 8080

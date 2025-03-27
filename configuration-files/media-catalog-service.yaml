@@ -9,12 +9,6 @@ spring:
     username: ${DB_SERVER_USERNAME:postgres}
     password: ${DB_SERVER_PASSWORD:password}
 
-grpc:
-    client:
-      payment-service:
-        address: lb://PAYMENT-SERVICE
-        negotiation-type: plaintext
-
 payment.redirect.url: /success-page
 
 server:

@@ -11,6 +11,19 @@ spring:
 
 payment.redirect.url: /success-page
 
+download:
+  path: ${DOWNLOAD_PATH:http://localhost:8083/s3/api/v1/download?name=}
+queue:
+  name: queue
+msg:
+  subject: Tune Vault
+
+grpc:
+  client:
+    payment-service:
+      address: discovery:///PAYMENT-SERVICE?grpc-port=9090
+      negotiation-type: plaintext
+
 server:
   port: 8082
 

@@ -1,10 +1,12 @@
 package ru.mooncess.media_catalog_service.services;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.mooncess.media_catalog_service.domain.UserStatus;
+import ru.mooncess.media_catalog_service.domain.enums.UserStatus;
 import ru.mooncess.media_catalog_service.dto.ProducerInfo;
 import ru.mooncess.media_catalog_service.dto.UpdateProducerInfo;
+import ru.mooncess.media_catalog_service.entities.MusicResource;
 import ru.mooncess.media_catalog_service.entities.Producer;
 import ru.mooncess.media_catalog_service.repositories.ProducerRepository;
 
@@ -73,5 +75,8 @@ public class ProducerService {
 
     public List<Producer> findProducersByNicknamePart(String nicknamePart) {
         return producerRepository.findAllByNicknameContainingIgnoreCase(nicknamePart);
+    }
+
+    public void increaseBalance(double amountIncome, MusicResource musicResource) {
     }
 }

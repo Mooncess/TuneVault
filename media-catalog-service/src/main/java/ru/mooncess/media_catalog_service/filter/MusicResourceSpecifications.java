@@ -1,7 +1,7 @@
 package ru.mooncess.media_catalog_service.filter;
 
 import org.springframework.data.jpa.domain.Specification;
-import ru.mooncess.media_catalog_service.domain.MusicResourceStatus;
+import ru.mooncess.media_catalog_service.domain.enums.MusicResourceStatus;
 import ru.mooncess.media_catalog_service.entities.MusicResource;
 
 public class MusicResourceSpecifications {

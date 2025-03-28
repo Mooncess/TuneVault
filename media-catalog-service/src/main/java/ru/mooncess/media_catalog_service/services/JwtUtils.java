@@ -4,7 +4,7 @@ import io.jsonwebtoken.Claims;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import ru.mooncess.media_catalog_service.domain.JwtAuthentication;
-import ru.mooncess.media_catalog_service.domain.Role;
+import ru.mooncess.media_catalog_service.domain.enums.Role;
 
 import java.util.ArrayList;
 import java.util.List;

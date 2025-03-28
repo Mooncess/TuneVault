@@ -8,6 +8,11 @@ spring:
     url: jdbc:postgresql://${DB_SERVER_URL:localhost:5439/media-catalog-serv-db}
     username: ${DB_SERVER_USERNAME:postgres}
     password: ${DB_SERVER_PASSWORD:password}
+  rabbitmq:
+    host: ${RABBIT_MQ_HOST:localhost}
+    port: 5672
+    username: user
+    password: password
 
 payment.redirect.url: /success-page
 

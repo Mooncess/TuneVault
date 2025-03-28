@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.mooncess.media_catalog_service.domain.AuthorId;
 
+import java.math.BigDecimal;
+
 @Entity
 @Getter
 @Setter
@@ -28,5 +30,5 @@ public class Author {
     private MusicResource musicResource;
 
     private String role;
-    private double percentageOfSale;
+    private BigDecimal percentageOfSale;
 }

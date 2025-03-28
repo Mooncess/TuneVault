@@ -10,7 +10,5 @@ import java.util.Optional;
 @Repository
 public interface ProducerRepository extends JpaRepository<Producer, Long> {
     Optional<Producer> findByEmail(String email);
-
-
     List<Producer> findAllByNicknameContainingIgnoreCase(String nicknamePart);
 }

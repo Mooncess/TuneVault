@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class MusicResourceInfo {
     private String key;
     private int bpm;
     private String genre;
-    private double price;
+    private BigDecimal price;
     private String type;
     private List<AuthorInfo> authors;
 }

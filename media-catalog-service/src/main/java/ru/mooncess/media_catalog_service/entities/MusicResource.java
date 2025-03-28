@@ -5,8 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.mooncess.media_catalog_service.domain.MusicResourceStatus;
+import ru.mooncess.media_catalog_service.domain.enums.MusicResourceStatus;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -26,7 +27,7 @@ public class MusicResource {
     private String key;
     private int bpm;
     private String genre;
-    private double price;
+    private BigDecimal price;
     private String type;
     @Enumerated(EnumType.STRING)
     private MusicResourceStatus status;

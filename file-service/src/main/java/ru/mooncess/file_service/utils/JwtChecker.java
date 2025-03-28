@@ -45,7 +45,6 @@ public final class JwtChecker {
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals("access")) {
-                    System.out.println(cookie.getValue());
                     return cookie.getValue();
                 }
             }

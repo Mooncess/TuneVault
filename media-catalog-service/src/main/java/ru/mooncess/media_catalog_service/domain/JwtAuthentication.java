@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import ru.mooncess.media_catalog_service.domain.enums.Role;
 
 import java.util.Collection;
 import java.util.Set;

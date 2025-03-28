@@ -1,9 +1,10 @@
 package ru.mooncess.media_catalog_service.services;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.mooncess.media_catalog_service.domain.AuthorId;
-import ru.mooncess.media_catalog_service.domain.UserStatus;
+import ru.mooncess.media_catalog_service.domain.enums.UserStatus;
 import ru.mooncess.media_catalog_service.dto.AuthorInfo;
 import ru.mooncess.media_catalog_service.entities.Author;
 import ru.mooncess.media_catalog_service.entities.MusicResource;
@@ -12,11 +13,13 @@ import ru.mooncess.media_catalog_service.exception.NoSuchProducerException;
 import ru.mooncess.media_catalog_service.repositories.AuthorRepository;
 import ru.mooncess.media_catalog_service.repositories.MusicResourceRepository;
 
-import java.util.Collection;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthorService {
@@ -54,12 +57,13 @@ public class AuthorService {
     }
 
     public boolean checkAuthors(String email, List<AuthorInfo> authors) {
-        long total = 0;
+        BigDecimal total = new BigDecimal("0");
         boolean hasOwner = false;
         boolean allActive = true;
 
         for (AuthorInfo i : authors) {
-            total += i.getPercentageOfSale();
+            total = total.add(i.getPercentageOfSale());
+            System.out.println(total + " " + i.getEmail() + " " + email);
             if (email.equals(i.getEmail())) hasOwner = true;
             if (producerService.findByEmail(i.getEmail())
                     .map(p -> p.getUserStatus() == UserStatus.BLOCKED)
@@ -69,7 +73,8 @@ public class AuthorService {
             }
         }
 
-        return hasOwner && allActive && total == 100;
+        return hasOwner && allActive && total.compareTo(
+                new BigDecimal("100")) == 0;
     }
 
     public Optional<Producer> findProducerById(Long id) {
@@ -84,5 +89,27 @@ public class AuthorService {
 
     public Optional<Producer> findProducerByEmail(String email) {
         return producerService.findByEmail(email);
+    }
+
+    public void increaseAuthorsBalance(BigDecimal amountIncome, MusicResource musicResource) {
+        List<Author> authors = findAuthorsOfResource(musicResource.getId());
+        BigDecimal remainingAmount = amountIncome;
+
+        for (int i = 0; i < authors.size() - 1; i++) {
+            Author author = authors.get(i);
+            BigDecimal authorAmount = amountIncome.multiply(author.getPercentageOfSale())
+                    .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+
+            author.getProducer().setBalance((author.getProducer().getBalance().add(authorAmount)));
+            authorRepository.save(author);
+            remainingAmount = remainingAmount.subtract(authorAmount);
+        }
+
+        Author lastAuthor = authors.get(authors.size() - 1);
+        lastAuthor.getProducer().setBalance(lastAuthor.getProducer().getBalance().add(remainingAmount));
+        authorRepository.save(lastAuthor);
+
+        log.info("Распределен доход {} для ресурса {} между {} авторами",
+                amountIncome, musicResource.getId(), authors.size());
     }
 }

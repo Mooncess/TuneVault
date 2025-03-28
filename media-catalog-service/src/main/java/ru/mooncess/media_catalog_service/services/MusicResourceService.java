@@ -8,7 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import ru.mooncess.media_catalog_service.domain.MusicResourceInfo;
-import ru.mooncess.media_catalog_service.domain.MusicResourceStatus;
+import ru.mooncess.media_catalog_service.domain.enums.MusicResourceStatus;
 import ru.mooncess.media_catalog_service.dto.MusicFileURI;
 import ru.mooncess.media_catalog_service.dto.UpdateMusicResourceInfo;
 import ru.mooncess.media_catalog_service.entities.MusicResource;
@@ -126,5 +126,9 @@ public class MusicResourceService {
             return temp;
         }
         return "";
+    }
+
+    public Optional<MusicResource> findById(Long id) {
+        return repository.findById(id);
     }
 }

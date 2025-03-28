@@ -4,6 +4,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.validation.annotation.Validated;
@@ -50,7 +52,7 @@ public class MinioController {
                                                  HttpServletRequest httpRequest) {
         JtwInfo jwtInfo = jwtChecker.checkToken(httpRequest);
 
-        if (isValidUser(jwtInfo)) {
+        if (!isValidUser(jwtInfo)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -65,7 +67,9 @@ public class MinioController {
         musicResourceInfo.setSourceURI(sourceURI);
 
         try {
-            if (mediaCatalogClient.createNewMusicResource(musicResourceInfo, jwtInfo.getUsername(), secretApiKey).getStatusCode() == HttpStatus.CREATED) {
+            if (mediaCatalogClient.createNewMusicResource(
+                    musicResourceInfo, jwtInfo.getUsername(), secretApiKey)
+                    .getStatusCode() == HttpStatus.CREATED) {
                 minioComponent.putResource(logo, logoURI, logoBucket);
                 minioComponent.putResource(demo, demoURI, demoBucket);
                 minioComponent.putResource(source, sourceURI, sourceBucket);
@@ -248,26 +252,27 @@ public class MinioController {
 //        return minioComponent.getObject(name);
 //    }
 
-//    @GetMapping("/download")
-//    public ResponseEntity<Resource> downloadFile(@RequestParam String name) throws Exception {
-//        count++;
-//        System.out.println("REQUEST: " + count);
-//        // Получаем объект из MinIO
-//        byte[] data = minioComponent.getObject(name);
-//        ByteArrayResource resource = new ByteArrayResource(data);
-//
-//        // Устанавливаем заголовки для скачивания
-//        return ResponseEntity.ok()
-//                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + name + "\"")
-//                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-//                .contentLength(data.length)
-//                .body(resource);
-//    }
+    @GetMapping("/download")
+    public ResponseEntity<Resource> downloadSourceFile(@RequestParam String name) throws Exception {
+        byte[] data = minioComponent.getObject(name, sourceBucket);
+        ByteArrayResource resource = new ByteArrayResource(data);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + name + "\"")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .contentLength(data.length)
+                .body(resource);
+    }
 
     @Async
     public CompletableFuture<byte[]> downloadFileAsync(String name, String bucketName) {
         return CompletableFuture.completedFuture(minioComponent.getObject(name, bucketName));
     }
+
+//    @GetMapping("/download")
+//    public String downloadSourceFile(@RequestParam String name) throws Exception {
+//        return minioComponent.getObject(name, sourceBucket);
+//    }
 
 //    @GetMapping("/download")
 //    public CompletableFuture<ResponseEntity<Resource>> downloadFile(@RequestParam String name) {

@@ -5,8 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.mooncess.media_catalog_service.domain.UserStatus;
+import ru.mooncess.media_catalog_service.domain.enums.UserStatus;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -18,7 +19,7 @@ public class Producer {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
-    private double balance = 0.0;
+    private BigDecimal balance = new BigDecimal("0");
     private LocalDate registrationDate;
 
     @Enumerated(EnumType.STRING)

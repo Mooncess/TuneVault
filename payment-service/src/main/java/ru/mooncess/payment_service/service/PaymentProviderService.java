@@ -10,5 +10,12 @@ public class PaymentProviderService {
          */
         return "/confirm/" + id;
     }
+
+    public boolean confirmWithdraw(long id, String amount, String destination) {
+        /*
+        Here you need a code to send a quotation request to the payment system.
+         */
+        return true;
+    }
 }
 

@@ -46,7 +46,6 @@ public class MinioComponent {
         boolean isExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
         if (!isExist) {
             minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
-            System.out.println("Bucket " + bucketName + " создан.");
         }
     }
 

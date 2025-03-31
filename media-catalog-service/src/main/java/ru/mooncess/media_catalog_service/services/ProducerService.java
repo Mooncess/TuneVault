@@ -10,6 +10,7 @@ import ru.mooncess.media_catalog_service.entities.MusicResource;
 import ru.mooncess.media_catalog_service.entities.Producer;
 import ru.mooncess.media_catalog_service.repositories.ProducerRepository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -78,5 +79,8 @@ public class ProducerService {
     }
 
     public void increaseBalance(double amountIncome, MusicResource musicResource) {
+    }
+
+    public void decreaseBalance(Producer producer, BigDecimal amount) {
     }
 }

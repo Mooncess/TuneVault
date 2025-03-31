@@ -9,6 +9,7 @@ import ru.mooncess.media_catalog_service.entities.Sale;
 import ru.mooncess.media_catalog_service.repositories.SaleRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,6 +20,7 @@ public class PurchaseService {
     private final SaleRepository saleRepository;
     private final AuthorService authorService;
     private final MessageSender messageSender;
+    private final RevenueService revenueService;
 
     @Value("${payment.redirect.url}")
     private String redirectUrl;
@@ -38,7 +40,9 @@ public class PurchaseService {
             sale.setMusicResource(mr.get());
 
             saleRepository.save(sale);
-            return paymentServiceGrpc.createPaymentForm(sale.getId(), sale.getAmountIncome(), redirectUrl);
+
+            String response = paymentServiceGrpc.createPaymentForm(sale.getId(), sale.getAmountIncome(), redirectUrl);
+            return response;
         } else {
             throw new RuntimeException("Music Resource Not Found");
         }
@@ -50,7 +54,7 @@ public class PurchaseService {
         if (sale.isPresent()) {
             sale.get().setStatus(SaleStatus.PAID_FOR);
             saleRepository.save(sale.get());
-            authorService.increaseAuthorsBalance(sale.get().getAmountIncome(), sale.get().getMusicResource());
+            authorService.increaseAuthorsBalance(sale.get().getAmountIncome(), sale.get().getMusicResource(), sale.get());
 
             String message = "Download link: " +
                     downloadPath +
@@ -58,6 +62,17 @@ public class PurchaseService {
                     "\nThank you for your purchase!";
 
             messageSender.sendEmailMessage(sale.get().getBuyerEmail(), msgSubject, message);
+        }
+    }
+
+    public List<Sale> findAllByMusicResource(Long id) {
+        var mr = musicResourceService.findById(id);
+
+        if (mr.isPresent()) {
+            return saleRepository.findAllByMusicResource(mr.get());
+        }
+        else {
+            throw new RuntimeException("MusicResource not found with id: " + id);
         }
     }
 }

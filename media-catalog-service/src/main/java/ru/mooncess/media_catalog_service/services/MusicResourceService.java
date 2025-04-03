@@ -33,9 +33,17 @@ public class MusicResourceService {
     public boolean createNewMusicResource(MusicResourceInfo info, String email) {
         if (!authorService.checkAuthors(email, info.getAuthors())) return false;
 
+        Producer producer = authorService.findProducerByEmail(email)
+                .orElse(null);
+
+        if (producer == null) {
+            return false;
+        }
+
         MusicResource musicResource = mapper.map(info);
         musicResource.setStatus(MusicResourceStatus.AVAILABLE);
         musicResource.setCreationDate(LocalDate.now());
+        musicResource.setProducer(producer);
 
         repository.save(musicResource);
 
@@ -46,9 +54,14 @@ public class MusicResourceService {
         return repository.findAllByProducer(producer);
     }
 
-    public List<MusicResource> getProducersResources(Long id) {
-        Optional<Producer> p = authorService.findProducerById(id);
-        return p.map(this::findResourcesByProducer).orElse(Collections.emptyList());
+    public List<MusicResource> getAvailableProducersResources(Long id) {
+        var p = authorService.findProducerById(id);
+
+        if (p.isPresent()) {
+            return repository.findAllByProducerAndStatus(p.get(), MusicResourceStatus.AVAILABLE);
+        }
+
+        return Collections.emptyList();
     }
 
     public List<MusicResource> findAll() {
@@ -74,7 +87,7 @@ public class MusicResourceService {
                 .map(musicResource -> {
                     MusicFileURI musicFileURI = new MusicFileURI();
                     musicFileURI.setDemoURI(musicResource.getDemoURI());
-                    musicFileURI.setLogoURI(musicResource.getLogoURI());
+                    musicFileURI.setCoverURI(musicResource.getCoverURI());
                     musicFileURI.setSourceURI(musicResource.getSourceURI());
                     return musicFileURI;
                 })
@@ -82,13 +95,14 @@ public class MusicResourceService {
     }
 
     public boolean isOwner(Long id, String email) {
-        return authorService.findAuthorsOfResource(id)
-                .stream().anyMatch(a -> a.getProducer().getEmail().equals(email));
+        var mr = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("MusicResource not found with id: " + id));
+        return mr.getProducer().getEmail().equals(email);
     }
 
     public void updateURI(Long id, MusicFileURI musicFileURI) {
         repository.findById(id).map(i -> {
-            if (musicFileURI.getLogoURI() != null) i.setLogoURI(musicFileURI.getLogoURI());
+            if (musicFileURI.getCoverURI() != null) i.setCoverURI(musicFileURI.getCoverURI());
             if (musicFileURI.getDemoURI() != null) i.setDemoURI(musicFileURI.getDemoURI());
             if (musicFileURI.getSourceURI() != null) i.setSourceURI(musicFileURI.getSourceURI());
             return repository.save(i);
@@ -117,11 +131,11 @@ public class MusicResourceService {
         return "";
     }
 
-    public String deleteLogo(Long id, String defaultURI) {
+    public String deleteCover(Long id, String defaultURI) {
         Optional<MusicResource> mr = repository.findById(id);
         if (mr.isPresent()) {
-            String temp = mr.get().getLogoURI();
-            mr.get().setLogoURI(defaultURI);
+            String temp = mr.get().getCoverURI();
+            mr.get().setCoverURI(defaultURI);
             repository.save(mr.get());
             return temp;
         }
@@ -130,5 +144,29 @@ public class MusicResourceService {
 
     public Optional<MusicResource> findById(Long id) {
         return repository.findById(id);
+    }
+
+    public MusicFileURI strikeAndDelete(Long id) {
+        var mr = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Music Resource not found with id: " + id));
+        if (mr.getStatus().equals(MusicResourceStatus.BLOCKED)) return null;
+        mr.setStatus(MusicResourceStatus.BLOCKED);
+        authorService.strike(mr.getProducer());
+        repository.save(mr);
+
+        MusicFileURI musicFileURI = new MusicFileURI();
+        musicFileURI.setCoverURI(mr.getCoverURI());
+        musicFileURI.setDemoURI(mr.getDemoURI());
+        musicFileURI.setSourceURI(mr.getSourceURI());
+
+        return musicFileURI;
+    }
+
+    public void unavailableMusicResource(Long id) {
+        var musicResource = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Music Resource not found with id: " + id));
+
+        musicResource.setStatus(MusicResourceStatus.UNAVAILABLE);
+        repository.save(musicResource);
     }
 }

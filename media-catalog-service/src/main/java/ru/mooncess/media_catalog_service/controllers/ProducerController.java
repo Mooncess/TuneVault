@@ -27,9 +27,9 @@ public class ProducerController {
         return ResponseEntity.badRequest().build();
     }
 
-    @GetMapping("/all")
-    ResponseEntity<List<Producer>> findAllProducers(@RequestParam(required = false) String nickname) {
-        if (nickname == null) return ResponseEntity.ok(producerService.findAllProducers());
+    @GetMapping("/")
+    ResponseEntity<List<Producer>> findAllUserProducers(@RequestParam(required = false) String nickname) {
+        if (nickname == null) return ResponseEntity.ok(producerService.findAllUserProducers());
         else return ResponseEntity.ok(producerService.findProducersByNicknamePart(nickname));
 
     }

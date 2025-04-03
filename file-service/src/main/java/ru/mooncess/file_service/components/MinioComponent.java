@@ -19,6 +19,8 @@ import java.util.UUID;
 public class MinioComponent {
     @Value("${minio.bucket.logo}")
     private String logo;
+    @Value("${minio.bucket.cover}")
+    private String cover;
     @Value("${minio.bucket.demo}")
     private String demo;
     @Value("${minio.bucket.source}")
@@ -35,6 +37,7 @@ public class MinioComponent {
     private void initializeBuckets() {
         try {
             createBucketIfNotExists(logo);
+            createBucketIfNotExists(cover);
             createBucketIfNotExists(demo);
             createBucketIfNotExists(source);
         } catch (Exception e) {

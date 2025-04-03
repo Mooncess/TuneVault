@@ -21,14 +21,31 @@ public interface MediaCatalogClient {
                                      @RequestParam String email,
                                      @RequestHeader("X-API-Key") String apiKey);
 
+    @GetMapping("/internal/mcs/api/v1/music-resource/source-uri")
+    ResponseEntity<String> getSourceURI (@RequestParam Long id,
+                                             @RequestHeader("X-API-Key") String apiKey);
+
     @PutMapping("/internal/mcs/api/v1/music-resource/delete-demo")
     ResponseEntity<String> deleteDemo (@RequestParam Long id,
                                   @RequestParam String email,
                                   @RequestHeader("X-API-Key") String apiKey);
 
-    @PutMapping("/internal/mcs/api/v1/music-resource/delete-logo")
-    ResponseEntity<String> deleteLogo (@RequestParam Long id,
+    @PutMapping("/internal/mcs/api/v1/music-resource/delete-cover")
+    ResponseEntity<String> deleteCover (@RequestParam Long id,
                                      @RequestParam String email,
                                      @RequestParam String defaultURI,
                                      @RequestHeader("X-API-Key") String apiKey);
+
+    @PostMapping("/internal/mcs/api/v1/producer/logo")
+    ResponseEntity<Void> uploadLogo (@RequestParam String username,
+                                       @RequestParam String logoURI,
+                                       @RequestHeader("X-API-Key") String apiKey);
+
+    @GetMapping("/internal/mcs/api/v1/producer/logo/get")
+    ResponseEntity<String> updateLogo (@RequestParam String username,
+                                       @RequestHeader("X-API-Key") String apiKey);
+
+    @PostMapping("/internal/mcs/api/v1/producer/logo/delete")
+    ResponseEntity<String> deleteLogo (@RequestParam String username,
+                                       @RequestHeader("X-API-Key") String apiKey);
 }

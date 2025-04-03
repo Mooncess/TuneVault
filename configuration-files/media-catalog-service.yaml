@@ -22,6 +22,9 @@ queue:
   name: queue
 msg:
   subject: Tune Vault
+default:
+  logo:
+    uri: default-logo-uri.jpg
 
 grpc:
   client:

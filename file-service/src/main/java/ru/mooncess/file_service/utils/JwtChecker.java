@@ -15,7 +15,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import ru.mooncess.file_service.domain.JtwInfo;
+import ru.mooncess.file_service.domain.JwtInfo;
 
 import javax.crypto.SecretKey;
 
@@ -28,7 +28,7 @@ public final class JwtChecker {
         this.jwtSecret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
     }
 
-    public JtwInfo checkToken(ServletRequest request) {
+    public JwtInfo checkToken(ServletRequest request) {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         final String token = getTokenFromRequest(httpRequest);
 
@@ -52,8 +52,8 @@ public final class JwtChecker {
         return null;
     }
 
-    private static JtwInfo createJwtInfoToken(Claims claims) {
-        JtwInfo jwtInfo = new JtwInfo();
+    private static JwtInfo createJwtInfoToken(Claims claims) {
+        JwtInfo jwtInfo = new JwtInfo();
         jwtInfo.setRole(claims.get("role", String.class));
         jwtInfo.setUsername(claims.get("sub", String.class));
         return jwtInfo;

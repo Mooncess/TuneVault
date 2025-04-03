@@ -1,0 +1,28 @@
+spring:
+  jpa:
+    generate-ddl: true
+    show-sql: false
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:postgresql://${DB_SERVER_URL:localhost:5440/admin-panel-serv-db}
+    username: ${DB_SERVER_USERNAME:postgres}
+    password: ${DB_SERVER_PASSWORD:password}
+  rabbitmq:
+    host: ${RABBIT_MQ_HOST:localhost}
+    port: 5672
+    username: user
+    password: password
+
+queue:
+  name: queue
+msg:
+  subject: Tune Vault
+
+server:
+  port: 8086
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}

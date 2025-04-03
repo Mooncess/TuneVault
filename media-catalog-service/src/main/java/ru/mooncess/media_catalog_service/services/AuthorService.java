@@ -28,7 +28,9 @@ public class AuthorService {
     private final MusicResourceRepository musicResourceRepository;
     private final AuthorRepository authorRepository;
     private final RevenueService revenueService;
-    public boolean createAuthorsForMusicResource(MusicResource musicResource, List<AuthorInfo> authorList) {
+
+    public boolean createAuthorsForMusicResource(MusicResource musicResource,
+                                                 List<AuthorInfo> authorList) {
         for (AuthorInfo i : authorList) {
             Author author = new Author();
 
@@ -65,7 +67,6 @@ public class AuthorService {
 
         for (AuthorInfo i : authors) {
             total = total.add(i.getPercentageOfSale());
-            System.out.println(total + " " + i.getEmail() + " " + email);
             if (email.equals(i.getEmail())) hasOwner = true;
             if (producerService.findByEmail(i.getEmail())
                     .map(p -> p.getUserStatus() == UserStatus.BLOCKED)
@@ -115,5 +116,10 @@ public class AuthorService {
 
         log.info("Распределен доход {} для ресурса {} между {} авторами",
                 amountIncome, musicResource.getId(), authors.size());
+    }
+
+
+    public void strike(Producer producer) {
+        producerService.strike(producer);
     }
 }

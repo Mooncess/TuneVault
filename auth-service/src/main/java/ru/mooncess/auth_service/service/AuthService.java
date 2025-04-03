@@ -26,6 +26,7 @@ public class AuthService {
     public JwtResponse login(@NonNull JwtRequest authRequest) throws AuthException {
         final User user = userService.findByUsername(authRequest.getLogin())
                 .orElseThrow(() -> new AuthException("The user was not found"));
+        if (user.getStatus().equals(Status.INACTIVE) || user.getStatus().equals(Status.BLOCKED)) throw new AuthException("Access to the account is prohibited");
         if (SecurityConfig.passwordEncoder().matches(authRequest.getPassword(), user.getPassword())) {
             final String accessToken = jwtProvider.generateAccessToken(user);
             final String refreshToken = jwtProvider.generateRefreshToken(user);
@@ -78,6 +79,11 @@ public class AuthService {
         redisService.delete(oldUsername);
         redisService.save(user.getUsername(), refreshToken);
         return new JwtResponse(accessToken, refreshToken);
+    }
+
+    public void disableProfile(String username) {
+        userService.disable(username);
+        redisService.delete(username);
     }
 
     public ResponseEntity<?> deleteUser(String username) {

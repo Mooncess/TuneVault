@@ -12,8 +12,8 @@ import java.util.List;
 @Setter
 public class MusicResourceInfo {
     private String sourceURI;
-    @Value("${music.resource.default.logo.uri}")
-    private String logoURI;
+    @Value("${music.resource.default.cover.uri}")
+    private String coverURI;
     private String demoURI;
     private String name;
     private String key;

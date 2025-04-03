@@ -23,7 +23,6 @@ public class PaymentServiceGrpcImpl {
     public String createPaymentForm(long id, BigDecimal amount, String redirectUrl) {
         PaymentServiceProto.PaymentRequest request = buildPaymentRequest(id, amount.toString(), redirectUrl);
         PaymentServiceProto.PaymentResponse response = paymentServiceBlockingStub.createPaymentForm(request);
-        System.out.println("POINT3");
         return response.getPaymentUrl();
     }
 

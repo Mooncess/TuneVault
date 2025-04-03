@@ -1,6 +1,8 @@
 package ru.mooncess.media_catalog_service.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,8 +21,9 @@ public class MusicResource {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+    @JsonIgnore
     private String sourceURI;
-    private String logoURI;
+    private String coverURI;
     private String demoURI;
     private LocalDate creationDate;
     private String name;
@@ -31,4 +34,8 @@ public class MusicResource {
     private String type;
     @Enumerated(EnumType.STRING)
     private MusicResourceStatus status;
+    @ManyToOne
+    @JoinColumn(name = "producer_id", nullable = false)
+    @NotNull
+    private Producer producer;
 }

@@ -1,5 +1,6 @@
 package ru.mooncess.media_catalog_service.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,6 +29,7 @@ public class Producer {
     private String nickname;
     private String about;
 
-    private String logoUri = "default_logo_uri";
+    private String logoUri;
     private String email;
+
 }

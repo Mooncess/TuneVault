@@ -21,4 +21,6 @@ eureka:
     service-url:
       defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
 
-# media.catalog.service.url: MEDIA-CATALOG-SERVICE
+strike:
+  max:
+    count: 5

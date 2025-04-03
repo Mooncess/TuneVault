@@ -3,6 +3,7 @@ package ru.mooncess.media_catalog_service.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import ru.mooncess.media_catalog_service.domain.enums.MusicResourceStatus;
 import ru.mooncess.media_catalog_service.domain.enums.SaleStatus;
 import ru.mooncess.media_catalog_service.entities.MusicResource;
 import ru.mooncess.media_catalog_service.entities.Sale;
@@ -20,7 +21,6 @@ public class PurchaseService {
     private final SaleRepository saleRepository;
     private final AuthorService authorService;
     private final MessageSender messageSender;
-    private final RevenueService revenueService;
 
     @Value("${payment.redirect.url}")
     private String redirectUrl;
@@ -32,6 +32,7 @@ public class PurchaseService {
     public String createSale(Long id, String email) throws RuntimeException {
         Optional<MusicResource> mr = musicResourceService.findById(id);
         if (mr.isPresent()) {
+            if (!mr.get().getStatus().equals(MusicResourceStatus.AVAILABLE)) throw new RuntimeException("Music Resource is blocked or unavailable");
             Sale sale = new Sale();
             sale.setSaleDate(LocalDateTime.now());
             sale.setBuyerEmail(email);
@@ -41,8 +42,7 @@ public class PurchaseService {
 
             saleRepository.save(sale);
 
-            String response = paymentServiceGrpc.createPaymentForm(sale.getId(), sale.getAmountIncome(), redirectUrl);
-            return response;
+            return paymentServiceGrpc.createPaymentForm(sale.getId(), sale.getAmountIncome(), redirectUrl);
         } else {
             throw new RuntimeException("Music Resource Not Found");
         }

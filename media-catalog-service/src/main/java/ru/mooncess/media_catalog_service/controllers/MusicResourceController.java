@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.mooncess.media_catalog_service.dto.UpdateMusicResourceInfo;
 import ru.mooncess.media_catalog_service.entities.MusicResource;
 import ru.mooncess.media_catalog_service.filter.MusicResourceFilter;
+import ru.mooncess.media_catalog_service.services.AuthorService;
 import ru.mooncess.media_catalog_service.services.MusicResourceService;
 import ru.mooncess.media_catalog_service.services.ProducerService;
 
@@ -21,11 +22,12 @@ import java.util.List;
 public class MusicResourceController {
     private final MusicResourceService musicResourceService;
     private final ProducerService producerService;
+    private final AuthorService authorService;
 
     @GetMapping("/by-producer/{id}")
     ResponseEntity<List<MusicResource>> findMusicResourcesByProducerId(@PathVariable Long id) {
         return producerService.findById(id)
-                .map(producer -> ResponseEntity.ok(musicResourceService.getProducersResources(id)))
+                .map(producer -> ResponseEntity.ok(musicResourceService.getAvailableProducersResources(id)))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
@@ -43,9 +45,30 @@ public class MusicResourceController {
         }
     }
 
+    @PutMapping("/{id}/unavailable")
+    @PreAuthorize("hasAuthority('USER')")
+    ResponseEntity<?> unavailableMusicResource(@PathVariable Long id,
+                                               Authentication authentication) {
+        if (musicResourceService.isOwner(id, authentication.getName())) {
+            musicResourceService.unavailableMusicResource(id);
+            return ResponseEntity.ok().build();
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+    }
+
     @GetMapping("/all")
+    @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<List<MusicResource>> findAll() {
         return ResponseEntity.ok(musicResourceService.findAll());
+    }
+
+    @GetMapping("/{id}")
+    ResponseEntity<?> findById(@PathVariable Long id) {
+        return musicResourceService.findById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping

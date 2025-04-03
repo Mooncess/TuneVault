@@ -9,7 +9,7 @@ public class MusicResourceMapper {
     public MusicResource map(MusicResourceInfo m) {
         MusicResource mr = new MusicResource();
         mr.setSourceURI(m.getSourceURI());
-        mr.setLogoURI(m.getLogoURI());
+        mr.setCoverURI(m.getCoverURI());
         mr.setDemoURI(m.getDemoURI());
         mr.setName(m.getName());
         mr.setKey(m.getKey());

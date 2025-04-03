@@ -31,4 +31,5 @@ public class User {
     private Role role;
     @Enumerated(EnumType.STRING)
     private Status status;
+    private int countStrike;
 }

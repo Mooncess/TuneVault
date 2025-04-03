@@ -54,6 +54,22 @@ public class InternalAuthController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @PutMapping("/disable")
+    ResponseEntity<Void> updateEmailOfProducer(@RequestParam Long id,
+                                               @RequestHeader("X-API-Key") String apiKey) {
+        if (!isValidApiKey(apiKey)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        try {
+            producerService.disable(id);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     private boolean isValidApiKey(String apiKey) {
         return secretApiKey.equals(apiKey);
     }

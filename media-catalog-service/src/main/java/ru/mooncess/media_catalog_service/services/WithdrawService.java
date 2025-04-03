@@ -33,7 +33,7 @@ public class WithdrawService {
         if (paymentServiceGrpc.createWithdrawForm(producer.getId(), amount, destination)) {
             withdrawRepository.save(withdraw);
             String message = "The amount has been successfully withdrawn from your Tune Vault balance: " + amount;
-            messageSender.sendWithdrawEmailMessage(producer.getEmail(), msgSubject, message);
+            messageSender.sendEmailMessage(producer.getEmail(), msgSubject, message);
             return true;
         }
         else {

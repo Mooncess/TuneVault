@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class MusicFileURI {
-    private String logoURI;
+    private String coverURI;
     private String demoURI;
     private String sourceURI;
 }

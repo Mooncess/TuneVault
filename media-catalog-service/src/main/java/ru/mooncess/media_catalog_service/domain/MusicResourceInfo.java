@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 public class MusicResourceInfo {
     private String sourceURI;
-    private String logoURI;
+    private String coverURI;
     private String demoURI;
     private String name;
     private String key;

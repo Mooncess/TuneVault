@@ -10,6 +10,10 @@ spring:
           uri: lb://MEDIA-CATALOG-SERVICE
           predicates:
             - Path=/mcs/api/v1/**
+        - id: admin-panel-service
+          uri: lb://ADMIN-PANEL-SERVICE
+          predicates:
+            - Path=/aps/api/v1/**
 
 server:
   port: 8080

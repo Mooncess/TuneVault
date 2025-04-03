@@ -20,4 +20,7 @@ public interface MediaCatalogClient {
     ResponseEntity<Void> deleteProducer(@RequestParam Long id,
                                                @RequestHeader("X-API-Key") String apiKey);
 
+    @PutMapping("/internal/mcs/api/v1/producer/disable")
+    ResponseEntity<Void> disable(@RequestParam Long id,
+                                 @RequestHeader("X-API-Key") String apiKey);
 }

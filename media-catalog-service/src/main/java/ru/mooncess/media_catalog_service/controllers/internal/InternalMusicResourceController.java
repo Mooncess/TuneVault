@@ -15,6 +15,8 @@ import ru.mooncess.media_catalog_service.services.MusicResourceService;
 public class InternalMusicResourceController {
     @Value("${mcs.api.key}")
     private String secretApiKey;
+    @Value("${download.path}")
+    private String downloadPath;
 
     private final MusicResourceService musicResourceService;
     @PostMapping("/create")
@@ -42,6 +44,17 @@ public class InternalMusicResourceController {
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
+    @GetMapping("/source-uri")
+    ResponseEntity<String> getSourceURI (@RequestParam Long id,
+                                         @RequestHeader("X-API-Key") String apiKey) {
+        if (!isValidApiKey(apiKey)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        return musicResourceService.findById(id)
+                .map(i -> ResponseEntity.ok(downloadPath + i.getSourceURI()))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
     @PutMapping("/update-files")
     ResponseEntity<Void> updateFilesOfMusicResource (@RequestParam Long id,
                                                      @RequestBody MusicFileURI musicFileURI,
@@ -50,7 +63,7 @@ public class InternalMusicResourceController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        musicResourceService.updateURI(id, musicFileURI);
+        musicResourceService. updateURI(id, musicFileURI);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -68,8 +81,8 @@ public class InternalMusicResourceController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
-    @PutMapping("/delete-logo")
-    ResponseEntity<String> deleteLogo (@RequestParam Long id,
+    @PutMapping("/delete-cover")
+    ResponseEntity<String> deleteCover (@RequestParam Long id,
                                        @RequestParam String email,
                                        @RequestParam String defaultURI,
                                        @RequestHeader("X-API-Key") String apiKey) {
@@ -78,9 +91,27 @@ public class InternalMusicResourceController {
         }
 
         if (musicResourceService.isOwner(id, email)) {
-            return ResponseEntity.ok(musicResourceService.deleteLogo(id, defaultURI));
+            return ResponseEntity.ok(musicResourceService.deleteCover(id, defaultURI));
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    @PutMapping("/strike")
+    ResponseEntity<MusicFileURI> strikeAndDelete(@RequestParam Long id,
+                                      @RequestHeader("X-API-Key") String apiKey) {
+        if (!isValidApiKey(apiKey)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        try {
+            MusicFileURI musicFileURI = musicResourceService.strikeAndDelete(id);
+            if (musicFileURI != null) return ResponseEntity.ok(musicFileURI);
+            else return ResponseEntity.noContent().build();
+        }
+        catch (Exception e) {
+            System.err.println(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     private boolean isValidApiKey(String apiKey) {

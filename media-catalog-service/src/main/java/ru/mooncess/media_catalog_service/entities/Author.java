@@ -20,12 +20,12 @@ public class Author {
     private AuthorId id;
 
     @ManyToOne
-    @MapsId("producerId")  // Ошибка: должно быть "producerId"
+    @MapsId("producerId")
     @JoinColumn(name = "producer_id")
     private Producer producer;
 
     @ManyToOne
-    @MapsId("musicResourceId")  // Ошибка: должно быть "musicResourceId"
+    @MapsId("musicResourceId")
     @JoinColumn(name = "music_resource_id")
     private MusicResource musicResource;
 

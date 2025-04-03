@@ -5,7 +5,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Status {
     ACTIVE("ACTIVE"),
-    BLOCKED("BLOCKED");
+    INACTIVE("INACTIVE"),
+    BLOCKED("BLOCKED"),
+    ADMIN("ADMIN");
 
     private final String vale;
 }

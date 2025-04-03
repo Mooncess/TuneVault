@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class JtwInfo {
+public class JwtInfo {
     private String username;
     private String role;
 }

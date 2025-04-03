@@ -5,11 +5,18 @@ minio:
   secure: false
   bucket:
     logo: ${BUCKET_LOGO:logo}
+    cover: ${BUCKET_COVER:cover}
     demo: ${BUCKET_DEMO:demo}
     source: ${BUCKET_SOURCE:source}
 
 server:
   port: 8083
+
+music:
+  resource:
+    default:
+      cover:
+        uri: default-cover-uri.jpg
 
 eureka:
   client:

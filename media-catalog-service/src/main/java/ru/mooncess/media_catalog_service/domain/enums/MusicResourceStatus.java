@@ -5,7 +5,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum MusicResourceStatus {
     AVAILABLE("AVAILABLE"),
-    DELETED("DELETED");
+    UNAVAILABLE("UNAVAILABLE"),
+    BLOCKED("BLOCKED");
     private final String vale;
 }
 

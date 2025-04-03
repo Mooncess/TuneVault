@@ -27,7 +27,7 @@ public class AuthController {
     private final AuthService authService;
     private final UserService userService;
     private final MediaCatalogClient mediaCatalogClient;
-    @Value("${mcs.api.key}")
+    @Value("${secret.api.key}")
     private String secretApiKey;
 
     @PostMapping("login")
@@ -112,7 +112,8 @@ public class AuthController {
         return responseEntity;
     }
     @PostMapping("/token")
-    public ResponseEntity<JwtResponse> getNewAccessToken(HttpServletRequest servletRequest) {
+    public ResponseEntity<JwtResponse> getNewAccessToken(HttpServletRequest servletRequest,
+                                                         Authentication authentication) {
         String refreshToken = getCookieValue(servletRequest);
 
         if (refreshToken == null) {
@@ -146,6 +147,28 @@ public class AuthController {
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(token);
+    }
+
+    @PutMapping("/disable")
+    public ResponseEntity<JwtResponse> disableProfile(HttpServletRequest servletRequest,
+                                                      HttpServletResponse response,
+                                                      Authentication authentication) {
+        authService.disableProfile(authentication.getName());
+
+        var accessCookie = new Cookie("access", null);
+        accessCookie.setPath("/");
+        accessCookie.setMaxAge(0);
+        accessCookie.setHttpOnly(true);
+
+        Cookie refreshCookie = new Cookie("refresh", null);
+        refreshCookie.setPath("/api/v1");
+        refreshCookie.setMaxAge(0);
+        refreshCookie.setHttpOnly(true);
+
+        response.addCookie(accessCookie);
+        response.addCookie(refreshCookie);
+
+        return ResponseEntity.noContent().build();
     }
 
     private String getCookieValue(HttpServletRequest request) {

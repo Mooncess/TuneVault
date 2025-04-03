@@ -22,10 +22,13 @@ import java.util.Optional;
 public class UserService {
 
     private UserRepository userRepository;
+    private final RedisService redisService;
     private PasswordEncoder passwordEncoder;
     private final MediaCatalogClient mediaCatalogClient;
-    @Value("${mcs.api.key}")
+    @Value("${secret.api.key}")
     private String secretApiKey;
+    @Value("${strike.max.count}")
+    private int maxCountStrike;
 
     @Autowired
     public void setUserRepository(UserRepository userRepository) {
@@ -46,8 +49,9 @@ public class UserService {
         user.setId(id);
         user.setUsername(registrationUserDto.getUsername());
         user.setPassword(passwordEncoder.encode(registrationUserDto.getPassword()));
-        user.setRole(Role.ADMIN);
+        user.setRole(Role.USER);
         user.setStatus(Status.ACTIVE);
+        user.setCountStrike(0);
         return userRepository.save(user);
     }
 
@@ -96,5 +100,30 @@ public class UserService {
 
     public void delete(User user) {
         userRepository.delete(user);
+    }
+
+    public boolean strike(Long id) {
+        var user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+
+        user.setCountStrike(user.getCountStrike() + 1);
+
+        if (user.getCountStrike() == maxCountStrike) {
+            user.setStatus(Status.BLOCKED);
+            userRepository.save(user);
+            redisService.delete(user.getUsername());
+            return true;
+        }
+        else {
+            userRepository.save(user);
+            return false;
+        }
+    }
+
+    public void disable(String username) {
+        var user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+        mediaCatalogClient.disable(user.getId(), secretApiKey);
+        user.setStatus(Status.INACTIVE);
+        userRepository.save(user);
     }
 }

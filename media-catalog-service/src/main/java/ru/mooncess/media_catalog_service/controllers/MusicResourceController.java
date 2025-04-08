@@ -73,6 +73,7 @@ public class MusicResourceController {
 
     @GetMapping
     public ResponseEntity<Page<MusicResource>> getFilteredResources(
+            @RequestParam(required = false) String name,
             @RequestParam(required = false) String genre,
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice,
@@ -82,6 +83,7 @@ public class MusicResourceController {
             @RequestParam(defaultValue = "name,asc") String sort) {
 
         MusicResourceFilter filter = new MusicResourceFilter();
+        filter.setName(name);
         filter.setGenre(genre);
         filter.setMinPrice(minPrice);
         filter.setMaxPrice(maxPrice);

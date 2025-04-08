@@ -30,6 +30,11 @@ public class MusicResourceSpecifications {
                 type == null ? null : cb.equal(root.get("type"), type);
     }
 
+    public static Specification<MusicResource> withName(String prefix) {
+        return (root, query, cb) -> prefix == null ? null :
+                cb.like(cb.lower(root.get("name")), prefix.toLowerCase() + "%");
+    }
+
     public static Specification<MusicResource> withStatus() {
         return (root, query, cb) ->
                 cb.equal(root.get("status"), MusicResourceStatus.AVAILABLE);
@@ -39,6 +44,7 @@ public class MusicResourceSpecifications {
         return Specification.where(withGenre(filter.getGenre()))
                 .and(withPriceBetween(filter.getMinPrice(), filter.getMaxPrice()))
                 .and(withType(filter.getType()))
+                .and(withName(filter.getName()))
                 .and(withStatus());
     }
 }

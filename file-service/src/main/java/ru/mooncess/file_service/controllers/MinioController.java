@@ -268,6 +268,42 @@ public class MinioController {
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
+    @GetMapping("/media")
+    public ResponseEntity<Resource> getMediaFile(@RequestParam String name,
+                                                 @RequestParam String type) {
+        System.out.println("POINT1");
+        try {
+            byte[] data;
+            String contentType;
+            switch (type.toLowerCase()) {
+                case "cover" -> {
+                    data = minioComponent.getObject(name, coverBucket);
+                    contentType = "image/jpeg";
+                }
+                case "demo" -> {
+                    data = minioComponent.getObject(name, demoBucket);
+                    contentType = "audio/mpeg";
+                }
+                case "logo" -> {
+                    data = minioComponent.getObject(name, logoBucket);
+                    contentType = "image/png";
+                }
+                default -> {
+                    return ResponseEntity.badRequest().build();
+                }
+            }
+
+            ByteArrayResource resource = new ByteArrayResource(data);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .contentLength(data.length)
+                    .body(resource);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     private boolean isValidApiKey(String apiKey) {
         return secretApiKey.equals(apiKey);
     }

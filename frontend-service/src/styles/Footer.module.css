@@ -1,0 +1,35 @@
+.footer {
+  background-color: #1a1a1a;
+  padding: 20px 0;
+  position: relative;
+  bottom: 0;
+  width: 100%;
+}
+
+/* Контейнер списка */
+.footerList {
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0;
+  padding: 0 40px;
+}
+
+/* Каждый пункт занимает равное пространство */
+.footerItem {
+  flex: 1;
+  text-align: center;
+}
+
+/* Стили ссылок */
+.footerItem a {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.3s ease;
+}
+
+.footerItem a:hover {
+  color: #00bfff;
+}

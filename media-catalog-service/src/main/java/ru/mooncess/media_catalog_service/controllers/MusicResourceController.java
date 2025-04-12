@@ -31,6 +31,15 @@ public class MusicResourceController {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
+    @GetMapping("/by-producer")
+    @PreAuthorize("hasAuthority('USER')")
+    ResponseEntity<List<MusicResource>> findMusicResourcesByProducer(Authentication authentication) {
+        System.out.println("HERE: " + authentication.getName());
+        return producerService.findByEmail(authentication.getName())
+                .map(producer -> ResponseEntity.ok(musicResourceService.getProducersResources(producer)))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
     @PutMapping("/update-info/{id}")
     @PreAuthorize("hasAuthority('USER')")
     ResponseEntity<?> updateMusicResourceInfo(@PathVariable Long id,

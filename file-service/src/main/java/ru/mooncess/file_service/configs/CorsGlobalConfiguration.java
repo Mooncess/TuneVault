@@ -1,26 +1,18 @@
 package ru.mooncess.file_service.configs;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.reactive.CorsWebFilter;
-import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class CorsGlobalConfiguration {
+public class CorsGlobalConfiguration implements WebMvcConfigurer {
 
-    @Bean
-    public CorsWebFilter corsWebFilter() {
-        CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.addAllowedOrigin("http://localhost:3000");
-        corsConfig.setAllowCredentials(true);
-        corsConfig.addAllowedMethod("*");
-        corsConfig.addAllowedHeader("*");
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfig);
-
-        return new CorsWebFilter(source);
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**") // разрешаем доступ ко всем эндпоинтам
+                .allowedOrigins("http://localhost:3000") // откуда можно делать запросы
+                .allowedMethods("*") // какие методы разрешены (GET, POST и т.д.)
+                .allowedHeaders("*") // какие заголовки разрешены
+                .allowCredentials(true); // разрешаем куки и авторизацию
     }
 }
-

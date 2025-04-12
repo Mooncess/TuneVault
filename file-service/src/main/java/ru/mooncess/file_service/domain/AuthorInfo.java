@@ -7,6 +7,5 @@ import lombok.Setter;
 @Setter
 public class AuthorInfo {
     private String email;
-    private String role;
     private double percentageOfSale;
 }

@@ -36,7 +36,7 @@ public class AuthController {
         HttpHeaders headers = new HttpHeaders();
 
         headers.add("Set-Cookie", "access=" + token.getAccessToken() + "; Path=/; Max-Age=3600; HttpOnly");
-        headers.add("Set-Cookie", "refresh=" + token.getRefreshToken() + "; Path=/api/v1; Max-Age=3600; HttpOnly");
+        headers.add("Set-Cookie", "refresh=" + token.getRefreshToken() + "; Path=/auth/api; Max-Age=3600; HttpOnly");
 
         return ResponseEntity.ok()
                 .headers(headers)
@@ -51,7 +51,7 @@ public class AuthController {
         accessCookie.setHttpOnly(true);
 
         Cookie refreshCookie = new Cookie("refresh", null);
-        refreshCookie.setPath("/api/v1");
+        refreshCookie.setPath("/auth/api");
         refreshCookie.setMaxAge(0);
         refreshCookie.setHttpOnly(true);
 
@@ -93,7 +93,7 @@ public class AuthController {
             HttpHeaders headers = new HttpHeaders();
 
             headers.add("Set-Cookie", "access=" + token.getAccessToken() + "; Path=/; Max-Age=3600; HttpOnly");
-            headers.add("Set-Cookie", "refresh=" + token.getRefreshToken() + "; Path=/api/v1; Max-Age=3600; HttpOnly");
+            headers.add("Set-Cookie", "refresh=" + token.getRefreshToken() + "; Path=/auth/api; Max-Age=3600; HttpOnly");
 
             return ResponseEntity.ok()
                     .headers(headers)
@@ -115,6 +115,8 @@ public class AuthController {
     public ResponseEntity<JwtResponse> getNewAccessToken(HttpServletRequest servletRequest,
                                                          Authentication authentication) {
         String refreshToken = getCookieValue(servletRequest);
+
+        System.out.println(refreshToken);
 
         if (refreshToken == null) {
             return ResponseEntity.badRequest().build();
@@ -142,7 +144,7 @@ public class AuthController {
         HttpHeaders headers = new HttpHeaders();
 
         headers.add("Set-Cookie", "access=" + token.getAccessToken() + "; Path=/; Max-Age=3600; HttpOnly");
-        headers.add("Set-Cookie", "refresh=" + token.getRefreshToken() + "; Path=/api/v1; Max-Age=3600; HttpOnly");
+        headers.add("Set-Cookie", "refresh=" + token.getRefreshToken() + "; Path=/auth/api; Max-Age=3600; HttpOnly");
 
         return ResponseEntity.ok()
                 .headers(headers)
@@ -161,7 +163,7 @@ public class AuthController {
         accessCookie.setHttpOnly(true);
 
         Cookie refreshCookie = new Cookie("refresh", null);
-        refreshCookie.setPath("/api/v1");
+        refreshCookie.setPath("/auth/api");
         refreshCookie.setMaxAge(0);
         refreshCookie.setHttpOnly(true);
 
@@ -175,6 +177,7 @@ public class AuthController {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
+                System.out.println(cookie.getName());
                 if (cookie.getName().equals("refresh")) {
                     System.out.println(cookie.getValue());
                     return cookie.getValue();

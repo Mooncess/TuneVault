@@ -28,7 +28,5 @@ public class Author {
     @MapsId("musicResourceId")
     @JoinColumn(name = "music_resource_id")
     private MusicResource musicResource;
-
-    private String role;
     private BigDecimal percentageOfSale;
 }

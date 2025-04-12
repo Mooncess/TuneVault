@@ -76,6 +76,7 @@ public class MinioController {
                 return ResponseEntity.status(HttpStatus.CREATED).build();
             }
         } catch (Exception e) {
+            System.out.println("SUKAAAA");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 

@@ -169,4 +169,10 @@ public class MusicResourceService {
         musicResource.setStatus(MusicResourceStatus.UNAVAILABLE);
         repository.save(musicResource);
     }
+
+    public List<MusicResource> getProducersResources(Producer producer) {
+        return repository.findAllByProducer(producer)
+                .stream().filter(i -> !i.getStatus().equals(MusicResourceStatus.BLOCKED))
+                .toList();
+    }
 }

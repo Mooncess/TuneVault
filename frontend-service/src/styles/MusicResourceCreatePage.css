@@ -1,0 +1,82 @@
+/* MusicResourceCreatePage.css */
+
+.layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  .main-content {
+    flex: 1;
+    padding: 40px 20px;
+    background-color: #f9f9f9;
+  }
+  
+  .create-page {
+    max-width: 800px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 32px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .create-page h1 {
+    font-size: 28px;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+  
+  .create-page form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .create-page input,
+  .create-page select {
+    padding: 10px 12px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background: #fff;
+    transition: border 0.2s ease;
+  }
+  
+  .create-page input:focus,
+  .create-page select:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+  
+  .create-page label {
+    font-weight: 500;
+    margin-bottom: 4px;
+    display: inline-block;
+  }
+  
+  .create-page h3 {
+    margin-top: 16px;
+    font-size: 20px;
+  }
+  
+  .create-page button[type="submit"] {
+    margin-top: 24px;
+    padding: 12px 20px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  
+  .create-page button[type="submit"]:hover {
+    background-color: #0056b3;
+  }
+  
+  .create-page input[type="file"] {
+    padding: 6px 0;
+  }
+  

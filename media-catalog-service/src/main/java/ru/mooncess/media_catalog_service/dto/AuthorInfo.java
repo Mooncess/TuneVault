@@ -9,6 +9,5 @@ import java.math.BigDecimal;
 @Setter
 public class AuthorInfo {
     private String email;
-    private String role;
     private BigDecimal percentageOfSale;
 }

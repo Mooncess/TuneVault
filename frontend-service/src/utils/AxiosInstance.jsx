@@ -7,62 +7,40 @@ const axiosInstance = axios.create({
     },
 });
 
-axiosInstance.interceptors.request.use(config => {
-    const accessToken = localStorage.getItem('access');
-
-    if (accessToken) {
-        config.headers['Authorization'] = `Bearer ${accessToken}`;
-    }
-
-    return config;
-});
-
 axiosInstance.interceptors.response.use(
-    response => {
-        return response;
-    },
+    response => response,
     async error => {
-        if (error.response && error.response.status === 401) {
-            console.log('Ошибка 401: Пользователь не авторизован. Пожалуйста, выполните вход.');
+        const originalRequest = error.config;
+
+        if (error.response?.status === 403 && !originalRequest._retry) {
+            originalRequest._retry = true;
 
             try {
-                const response = await axios.post(`${process.env.REACT_APP_API_GATEWAY_SERVER_URL}/auth/api/v1/token`, null, {
-                    withCredentials: true,
-                });
-                console.log('Access token refreshed successfully:', response.data);
-                localStorage.setItem('access', response.data.accessToken);
-                const accessToken = localStorage.getItem('access');
-                error.config.headers['Authorization'] = `Bearer ${accessToken}`;
-                
-                console.log(response.status);
+                const res = await axios.post(
+                    `${process.env.REACT_APP_API_GATEWAY_SERVER_URL}/auth/api/v1/token`,
+                    null,
+                    { withCredentials: true }
+                );
 
-                // Повторяем исходный запрос с обновленным токеном
-                return axios(error.config);
-            } catch (accessError) {
-                if (accessError.response && accessError.response.status === 500) {
-                  try {
-                    const response = await axios.post(`${process.env.REACT_APP_API_GATEWAY_SERVER_URL}/auth/api/v1/refresh`, null, {
-                        withCredentials: true,
-                    });
-                    console.log("Обновил рефреш токен");
-                    localStorage.setItem('access', response.data.accessToken);
-                    const accessToken = localStorage.getItem('access');
-                    error.config.headers['Authorization'] = `Bearer ${accessToken}`;
-    
-                    // Повторяем исходный запрос с обновленным токеном
-                    return axiosInstance(error.config);
+                return axiosInstance(originalRequest);
+            } catch (tokenError) {
+                try {
+                    const res = await axios.post(
+                        `${process.env.REACT_APP_API_GATEWAY_SERVER_URL}/auth/api/v1/refresh`,
+                        null,
+                        { withCredentials: true }
+                    );
+
+
+                    return axiosInstance(originalRequest);
                 } catch (refreshError) {
+                    console.warn('Не удалось обновить токены. Перенаправление на /login.');
                     window.location.href = '/login';
-                    // Можно выполнить дополнительные действия при ошибке обновления токена
                     return Promise.reject(refreshError);
                 }
-                }
-                // Можно выполнить дополнительные действия при ошибке обновления токена
-                return Promise.reject(accessError);
             }
-        } else if (error.response && error.response.status === 403) {
-            return error.response;
         }
+
         return Promise.reject(error);
     }
 );

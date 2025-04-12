@@ -59,7 +59,7 @@ const MusicCard = ({ id, name, price, coverURI, demoURI, type, producer, playing
   }, [isPlaying]);
 
   const handleCardClick = () => {
-    navigate(`/catalog/${id}`);
+    navigate(`/music-resource/${id}`);
   };
 
   return (

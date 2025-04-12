@@ -1,8 +1,6 @@
 .footer {
-  background-color: #1a1a1a;
+  background-color: rgb(0, 0, 0); /* немного светлее фона, чем в navbar */
   padding: 20px 0;
-  position: relative;
-  bottom: 0;
   width: 100%;
 }
 
@@ -24,12 +22,12 @@
 
 /* Стили ссылок */
 .footerItem a {
-  color: #ffffff;
+  color: rgb(29, 205, 159); /* основной цвет ссылок */
   text-decoration: none;
   font-size: 14px;
   transition: color 0.3s ease;
 }
 
 .footerItem a:hover {
-  color: #00bfff;
+  color: rgb(22, 153, 118); /* при наведении — слегка темнее */
 }

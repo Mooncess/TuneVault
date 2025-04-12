@@ -1,0 +1,144 @@
+/* CatalogPage.css */
+
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background-color: rgb(34, 34, 34); /* тёмный, но не полностью чёрный фон */
+  color: white;
+}
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px 40px;
+  background-color: rgb(34, 34, 34);
+}
+
+/* Поисковая строка */
+.search-row {
+  display: flex;
+  justify-content: center; /* Центрируем элементы поиска */
+  gap: 10px;
+  padding: 20px;
+}
+
+.search-row input,
+.search-row button {
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  background-color: rgb(0, 0, 0);
+  color: white;
+  outline: none;
+}
+
+.search-row button {
+  background-color: rgb(29, 205, 159);
+  color: rgb(0, 0, 0);
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.search-row button:hover {
+  background-color: rgb(22, 153, 118);
+}
+
+/* Фильтры и сортировка */
+.filter-row,
+.sort-pagination-row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding: 10px 20px;
+  flex-wrap: wrap;
+}
+
+.filter-row input,
+.filter-row select,
+.sort-pagination-row select {
+  padding: 8px 10px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid rgb(0, 0, 0);
+  background-color: rgb(0, 0, 0);
+  color: white;
+  outline: none;
+}
+
+.filter-row input:focus,
+.filter-row select:focus,
+.sort-pagination-row select:focus {
+  border-color: rgb(29, 205, 159);
+}
+
+/* Контейнер карточек */
+.catalog-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* Более скучкованные карточки */
+  gap: 15px; /* Уменьшенный gap */
+  padding: 20px 0;
+}
+
+.catalog-container .MusicCard {
+  background-color: rgb(34, 34, 34); /* Темный фон для карточек */
+  border-radius: 6px;
+  padding: 15px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.catalog-container .MusicCard:hover {
+  transform: translateY(-5px); /* Эффект нажатия */
+}
+
+/* Пагинация */
+.pagination-row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  align-items: center;
+  padding-bottom: 30px;
+}
+
+.pagination-row button {
+  padding: 10px 16px;
+  background-color: rgb(29, 205, 159);
+  color: rgb(0, 0, 0);
+  border: none;
+  border-radius: 6px;
+  margin: 0 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.pagination-row button:disabled {
+  background-color: rgb(22, 153, 118);
+  cursor: not-allowed;
+}
+
+.pagination-row span {
+  font-weight: bold;
+}
+
+/* Улучшение прокрутки и адаптивность */
+@media (max-width: 600px) {
+  .main-content {
+    padding: 20px;
+  }
+
+  .search-row,
+  .filter-row,
+  .sort-pagination-row {
+    flex-direction: column;
+  }
+
+  .catalog-container {
+    grid-template-columns: 1fr;
+  }
+}

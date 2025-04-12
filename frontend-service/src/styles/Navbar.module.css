@@ -1,36 +1,35 @@
 .navbar {
-    background-color: #1a1a1a;
-    padding: 15px 0;
-  }
-  
-  /* Контейнер списка */
-  .navbarList {
-    list-style: none;
-    display: flex;
-    justify-content: space-between; /* Элементы равномерно по ширине */
-    align-items: center;
-    margin: 0;
-    padding: 0 40px;
-  }
-  
-  /* Каждый пункт занимает равное место */
-  .navbarItem {
-    flex: 1;
-    text-align: center;
-  }
-  
-  /* Стили ссылок */
-  .navbarItem a {
-    color: #ffffff;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 16px;
-    display: block;
-    padding: 10px 0;
-    transition: color 0.3s ease;
-  }
-  
-  .navbarItem a:hover {
-    color: #00bfff;
-  }
-  
+  background-color: rgb(0, 0, 0); /* глубокий чёрный фон */
+  padding: 15px 0;
+}
+
+/* Контейнер списка */
+.navbarList {
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0;
+  padding: 0 40px;
+}
+
+/* Каждый пункт занимает равное место */
+.navbarItem {
+  flex: 1;
+  text-align: center;
+}
+
+/* Стили ссылок */
+.navbarItem a {
+  color: rgb(29, 205, 159); /* основной цвет ссылок */
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 16px;
+  display: block;
+  padding: 10px 0;
+  transition: color 0.3s ease;
+}
+
+.navbarItem a:hover {
+  color: rgb(22, 153, 118); /* цвет при наведении */
+}

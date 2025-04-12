@@ -51,7 +51,6 @@ public class AuthorService {
             author.setId(authorId);
 
             author.setMusicResource(musicResource);
-            author.setRole(i.getRole());
             author.setPercentageOfSale(i.getPercentageOfSale());
 
             authorRepository.save(author);

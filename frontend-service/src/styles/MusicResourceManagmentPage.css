@@ -1,0 +1,56 @@
+.page-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .page-title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 28px;
+  }
+  
+  .table-wrapper {
+    overflow-x: auto;
+  }
+  
+  .resource-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .resource-table th,
+  .resource-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .resource-table th {
+    background-color: #f8f8f8;
+    font-weight: bold;
+  }
+  
+  .table-row {
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .table-row:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .logout-btn {
+    background-color: #ff4d4f;
+    color: white;
+    margin-top: 10px;
+  }
+  
+  .logout-btn:hover {
+    background-color: #ff7875;
+  }
+  

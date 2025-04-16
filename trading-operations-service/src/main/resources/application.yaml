@@ -1,1 +1,16 @@
-spring.application.name=trading-operations-service
+spring:
+  application:
+    name: trading-operations-service
+  config.import: configserver:${CONFIG_SERVER_URI:http://localhost:8888}
+  cloud.config:
+    fail-fast: true
+    label: main
+
+jwt:
+  secret: ${JWT_ACCESS:S2V5IGZvciBhY2Nlc3MgdG9rZW4gYnkgTW9vbmNlc3M=}
+
+mcs:
+  api:
+    key: T05FX0FQSV9LRVk=
+
+

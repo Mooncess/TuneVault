@@ -14,6 +14,10 @@ spring:
           uri: lb://ADMIN-PANEL-SERVICE
           predicates:
             - Path=/aps/api/v1/**
+        - id: trading-operations-service
+          uri: lb://TRADING-OPERATIONS-SERVICE
+          predicates:
+            - Path=/tos/api/v1/**
 
 server:
   port: 8080

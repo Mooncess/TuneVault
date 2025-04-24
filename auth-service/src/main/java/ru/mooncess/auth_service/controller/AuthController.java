@@ -116,7 +116,7 @@ public class AuthController {
                                                          Authentication authentication) {
         String refreshToken = getCookieValue(servletRequest);
 
-        System.out.println(refreshToken);
+        System.out.println("POINT " + refreshToken);
 
         if (refreshToken == null) {
             return ResponseEntity.badRequest().build();
@@ -134,6 +134,8 @@ public class AuthController {
     @PostMapping("/refresh")
     public ResponseEntity<JwtResponse> getNewRefreshToken(HttpServletRequest servletRequest) {
         String refreshToken = getCookieValue(servletRequest);
+
+        System.out.println("POINT 2 " + refreshToken);
 
         if (refreshToken == null) {
             return ResponseEntity.badRequest().build();

@@ -1,0 +1,84 @@
+.musicCard {
+  width: 200px;
+  height: 300px;
+  box-sizing: border-box;
+
+  border: 1px solid rgb(22, 153, 118);
+  border-radius: 12px;
+  overflow: hidden;
+  padding: 12px;
+  background-color: rgb(34, 34, 34);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.musicCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.musicCover {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.musicInfo {
+  width: 100%;
+  text-align: center;
+  color: white;
+  margin-bottom: 8px;
+}
+
+.musicName {
+  font-size: 16px;
+  font-weight: bold;
+  color: rgb(29, 205, 159);
+  word-wrap: break-word;
+}
+
+.musicType {
+  font-size: 13px;
+  font-style: italic;
+  color: rgb(22, 153, 118);
+  margin-top: 4px;
+}
+
+.musicProducer {
+  font-size: 13px;
+  font-weight: bold;
+  color: rgb(29, 205, 159);
+  margin-top: 4px;
+}
+
+.musicPrice {
+  margin-top: 4px;
+  font-size: 14px;
+  color: white;
+}
+
+.playButton {
+  margin-top: auto;
+  padding: 6px 12px;
+  font-size: 14px;
+  border: none;
+  border-radius: 6px;
+  background-color: rgb(29, 205, 159);
+  color: rgb(0, 0, 0);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.playButton:hover {
+  background-color: rgb(22, 153, 118);
+  color: white;
+}

@@ -6,8 +6,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.mooncess.media_catalog_service.domain.MusicResourceInfo;
+import ru.mooncess.media_catalog_service.domain.MusicResourceSaleInfo;
+import ru.mooncess.media_catalog_service.domain.enums.MusicResourceStatus;
 import ru.mooncess.media_catalog_service.dto.MusicFileURI;
 import ru.mooncess.media_catalog_service.services.MusicResourceService;
+
+import java.math.BigDecimal;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/internal/mcs/api/v1/music-resource")
@@ -113,6 +118,38 @@ public class InternalMusicResourceController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
+
+    @GetMapping("/get-price-by-id")
+    ResponseEntity<?> getPriceOfMusicResource (@RequestParam Long id,
+                                                                  @RequestHeader("X-API-Key") String apiKey) {
+        if (!isValidApiKey(apiKey)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        return musicResourceService.findById(id)
+                .map(i -> {
+                    if (i.getStatus().equals(MusicResourceStatus.AVAILABLE)) return ResponseEntity.ok(i.getPrice());
+                    else return ResponseEntity.badRequest().build();
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/get-mr-sale-info")
+    ResponseEntity<MusicResourceSaleInfo> getMusicResourceSaleInfo(@RequestParam Long id,
+                                                                   @RequestHeader("X-API-Key") String apiKey) {
+        if (!isValidApiKey(apiKey)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        try {
+            return ResponseEntity.ok(musicResourceService.getMusicResourceSaleInfo(id));
+        }
+        catch (Exception e) {
+            System.err.println(e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
 
     private boolean isValidApiKey(String apiKey) {
         return secretApiKey.equals(apiKey);

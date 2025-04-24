@@ -22,7 +22,7 @@ import javax.crypto.SecretKey;
 public final class AuthService {
     private final SecretKey jwtSecret;
 
-    public AuthService(ProducerService producerService, @Value("${jwt.secret}") String secret) {
+    public AuthService(@Value("${jwt.secret}") String secret) {
         this.jwtSecret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
     }
 

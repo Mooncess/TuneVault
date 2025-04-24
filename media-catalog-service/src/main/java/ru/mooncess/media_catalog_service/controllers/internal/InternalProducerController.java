@@ -54,13 +54,24 @@ public class InternalProducerController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         try {
-
             return ResponseEntity.ok(producerService.deleteLogo(username));
         }
         catch (Exception e) {
             System.err.println(e.getMessage());
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @GetMapping("/get-producer-id-by-email")
+    ResponseEntity<Long> getProducerIdByEmail(@RequestParam String email,
+                                              @RequestHeader("X-API-Key") String apiKey) {
+        if (!isValidApiKey(apiKey)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        return producerService.findByEmail(email)
+                .map(i -> ResponseEntity.ok(i.getId()))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     private boolean isValidApiKey(String apiKey) {

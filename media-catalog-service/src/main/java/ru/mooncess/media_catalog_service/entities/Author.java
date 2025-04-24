@@ -23,7 +23,6 @@ public class Author {
     @MapsId("producerId")
     @JoinColumn(name = "producer_id")
     private Producer producer;
-
     @ManyToOne
     @MapsId("musicResourceId")
     @JoinColumn(name = "music_resource_id")

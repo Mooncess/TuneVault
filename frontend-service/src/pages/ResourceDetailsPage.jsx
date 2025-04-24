@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import MyFooter from '../components/Footer';
 import MyNavbar from '../components/Navbar';
-import '../styles/ResourceDetailsPage.css';
+import styles from '../styles/ResourceDetailsPage.module.css'; // Импорт стилей как модуля
 import AudioPlayer from 'react-h5-audio-player';
 import 'react-h5-audio-player/lib/styles.css';
 import PurchaseModal from '../components/PurchaseModal'; // модалка покупки
@@ -51,7 +51,7 @@ const ResourceDetailsPage = () => {
     };
   }, [id]);
 
-  if (!music) return <div className="loading">Загрузка...</div>;
+  if (!music) return <div className={styles.loading}>Загрузка...</div>;
 
   const handleProducerClick = () => {
     navigate(`/producer/${music.producer.id}`);
@@ -63,32 +63,32 @@ const ResourceDetailsPage = () => {
   return (
     <>
       <MyNavbar />
-      <div className="music-details">
-        <div className="details-top">
-          <div className="cover-section">
-            {coverUrl && <img src={coverUrl} alt="Обложка" className="cover-img" />}
+      <div className={styles['music-details']}>
+        <div className={styles['details-top']}>
+          <div className={styles['cover-section']}>
+            {coverUrl && <img src={coverUrl} alt="Обложка" className={styles['cover-img']} />}
           </div>
-          <div className="info-section">
+          <div className={styles['info-section']}>
             <h2>{music.name}</h2>
-            <p className="producer-name">
+            <p className={styles['producer-name']}>
               by <span onClick={handleProducerClick}>{music.producer.nickname}</span>
             </p>
             <p><strong>Тип:</strong> {music.type}</p>
             <p><strong>Жанр:</strong> {music.genre}</p>
             <p><strong>Цена:</strong> {music.price}₽</p>
 
-            <button className="buy-button" onClick={openModal}>
+            <button className={styles['buy-button']} onClick={openModal}>
               Купить
             </button>
           </div>
         </div>
 
         {demoUrl && (
-          <div className="audio-section">
+          <div className={styles['audio-section']}>
             <AudioPlayer
               src={demoUrl}
               onPlay={() => console.log('Playing')}
-              className="custom-audio-player"
+              className={styles['custom-audio-player']}
               layout="horizontal-reverse"
               customAdditionalControls={[]}
               customVolumeControls={[]}
@@ -97,9 +97,13 @@ const ResourceDetailsPage = () => {
           </div>
         )}
 
-        <div className="meta-section">
-          <p><strong>BPM:</strong> {music.bpm}</p>
-          <p><strong>Ключ:</strong> {music.key}</p>
+        <div className={styles['meta-section']}>
+          {music.type === 'Loop' && (
+            <>
+              <p><strong>BPM:</strong> {music.bpm}</p>
+              <p><strong>Ключ:</strong> {music.key}</p>
+            </>
+          )}
           <p><strong>Дата создания:</strong> {music.creationDate}</p>
         </div>
       </div>

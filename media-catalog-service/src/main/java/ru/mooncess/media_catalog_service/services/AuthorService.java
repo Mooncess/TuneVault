@@ -9,13 +9,11 @@ import ru.mooncess.media_catalog_service.dto.AuthorInfo;
 import ru.mooncess.media_catalog_service.entities.Author;
 import ru.mooncess.media_catalog_service.entities.MusicResource;
 import ru.mooncess.media_catalog_service.entities.Producer;
-import ru.mooncess.media_catalog_service.entities.Sale;
 import ru.mooncess.media_catalog_service.exception.NoSuchProducerException;
 import ru.mooncess.media_catalog_service.repositories.AuthorRepository;
 import ru.mooncess.media_catalog_service.repositories.MusicResourceRepository;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +25,6 @@ public class AuthorService {
     private final ProducerService producerService;
     private final MusicResourceRepository musicResourceRepository;
     private final AuthorRepository authorRepository;
-    private final RevenueService revenueService;
 
     public boolean createAuthorsForMusicResource(MusicResource musicResource,
                                                  List<AuthorInfo> authorList) {
@@ -93,29 +90,29 @@ public class AuthorService {
         return producerService.findByEmail(email);
     }
 
-    public void increaseAuthorsBalance(BigDecimal amountIncome, MusicResource musicResource, Sale sale) {
-        List<Author> authors = findAuthorsOfResource(musicResource.getId());
-        BigDecimal remainingAmount = amountIncome;
-
-        for (int i = 0; i < authors.size() - 1; i++) {
-            Author author = authors.get(i);
-            BigDecimal authorAmount = amountIncome.multiply(author.getPercentageOfSale())
-                    .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
-
-            author.getProducer().setBalance((author.getProducer().getBalance().add(authorAmount)));
-            authorRepository.save(author);
-            revenueService.createRevenue(authorAmount, sale, author.getProducer());
-            remainingAmount = remainingAmount.subtract(authorAmount);
-        }
-
-        Author lastAuthor = authors.get(authors.size() - 1);
-        lastAuthor.getProducer().setBalance(lastAuthor.getProducer().getBalance().add(remainingAmount));
-        authorRepository.save(lastAuthor);
-        revenueService.createRevenue(remainingAmount, sale, lastAuthor.getProducer());
-
-        log.info("Распределен доход {} для ресурса {} между {} авторами",
-                amountIncome, musicResource.getId(), authors.size());
-    }
+//    public void increaseAuthorsBalance(BigDecimal amountIncome, MusicResource musicResource, Sale sale) {
+//        List<Author> authors = findAuthorsOfResource(musicResource.getId());
+//        BigDecimal remainingAmount = amountIncome;
+//
+//        for (int i = 0; i < authors.size() - 1; i++) {
+//            Author author = authors.get(i);
+//            BigDecimal authorAmount = amountIncome.multiply(author.getPercentageOfSale())
+//                    .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+//
+//            author.getProducer().setBalance((author.getProducer().getBalance().add(authorAmount)));
+//            authorRepository.save(author);
+//            revenueService.createRevenue(authorAmount, sale, author.getProducer());
+//            remainingAmount = remainingAmount.subtract(authorAmount);
+//        }
+//
+//        Author lastAuthor = authors.get(authors.size() - 1);
+//        lastAuthor.getProducer().setBalance(lastAuthor.getProducer().getBalance().add(remainingAmount));
+//        authorRepository.save(lastAuthor);
+//        revenueService.createRevenue(remainingAmount, sale, lastAuthor.getProducer());
+//
+//        log.info("Распределен доход {} для ресурса {} между {} авторами",
+//                amountIncome, musicResource.getId(), authors.size());
+//    }
 
 
     public void strike(Producer producer) {

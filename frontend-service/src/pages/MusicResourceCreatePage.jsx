@@ -4,7 +4,7 @@ import { GENRES, TYPES } from "../config/MusicOptions";
 import CoAuthorForm from "../components/CoAuthorForm";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import "../styles/MusicResourceCreatePage.css";
+import styles from "../styles/MusicResourceCreatePage.module.css"; // Импорт стилей как модуля
 import axiosInstance from "../utils/AxiosInstance";
 
 const MusicResourceCreatePage = () => {
@@ -56,8 +56,6 @@ const MusicResourceCreatePage = () => {
       authors,
     };
 
-    console.log("baseInfo:", baseInfo);
-
     const formData = new FormData();
     formData.append("musicResourceBaseInfo", new Blob([JSON.stringify(baseInfo)], { type: "application/json" }));
     if (cover) formData.append("cover", cover);
@@ -81,13 +79,14 @@ const MusicResourceCreatePage = () => {
   };
 
   return (
-    <div className="layout">
+    <div className={styles.layout}>
       <Navbar />
-      <main className="main-content">
-        <div className="create-page">
-          <h1>Добавить музыкальный ресурс</h1>
+      <main className={styles['main-content']}>
+        <div className={styles['create-page']}>
+          <h1 className={styles['title']}>Добавить музыкальный ресурс</h1>
           <form onSubmit={handleSubmit}>
             <input
+              className={styles['input-field']}
               name="name"
               type="text"
               placeholder="Название"
@@ -95,23 +94,13 @@ const MusicResourceCreatePage = () => {
               onChange={(e) => setName(e.target.value)}
               required
             />
-            <input
-              name="key"
-              type="text"
-              placeholder="Тональность"
-              value={key}
-              onChange={(e) => setKey(e.target.value)}
+            <select
+              className={styles['input-field']}
+              name="genre"
+              value={genre}
+              onChange={(e) => setGenre(e.target.value)}
               required
-            />
-            <input
-              name="bpm"
-              type="number"
-              placeholder="BPM"
-              value={bpm}
-              onChange={(e) => setBpm(e.target.value)}
-              required
-            />
-            <select name="genre" value={genre} onChange={(e) => setGenre(e.target.value)} required>
+            >
               <option value="">Выберите жанр</option>
               {GENRES.map((g) => (
                 <option key={g} value={g}>
@@ -120,6 +109,7 @@ const MusicResourceCreatePage = () => {
               ))}
             </select>
             <input
+              className={styles['input-field']}
               name="price"
               type="number"
               placeholder="Цена"
@@ -127,7 +117,13 @@ const MusicResourceCreatePage = () => {
               onChange={(e) => setPrice(e.target.value)}
               required
             />
-            <select name="type" value={type} onChange={(e) => setType(e.target.value)} required>
+            <select
+              className={styles['input-field']}
+              name="type"
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+              required
+            >
               <option value="">Выберите тип</option>
               {TYPES.map((t) => (
                 <option key={t} value={t}>
@@ -136,23 +132,47 @@ const MusicResourceCreatePage = () => {
               ))}
             </select>
 
-            <h3>Соавторы</h3>
+            {/* Добавляем условные поля для BPM и Тональности */}
+            {type === "Loop" && (
+              <>
+                <input
+                  className={styles['input-field']}
+                  name="bpm"
+                  type="number"
+                  placeholder="BPM"
+                  value={bpm}
+                  onChange={(e) => setBpm(e.target.value)}
+                  required
+                />
+                <input
+                  className={styles['input-field']}
+                  name="key"
+                  type="text"
+                  placeholder="Тональность"
+                  value={key}
+                  onChange={(e) => setKey(e.target.value)}
+                  required
+                />
+              </>
+            )}
+
+            <h3 className={styles['subheading']}>Соавторы</h3>
             <CoAuthorForm ownerEmail={userEmail} onChange={setAuthors} />
 
-            <div>
-              <label>Обложка</label>
+            <div className={styles['file-upload']}>
+              <label className={styles['file-label']}>Обложка</label>
               <input type="file" accept="image/*" onChange={(e) => setCover(e.target.files[0])} />
             </div>
-            <div>
-              <label>Демо-трек</label>
+            <div className={styles['file-upload']}>
+              <label className={styles['file-label']}>Демо-трек</label>
               <input type="file" accept="audio/*" onChange={(e) => setDemo(e.target.files[0])} />
             </div>
-            <div>
-              <label>Исходник</label>
+            <div className={styles['file-upload']}>
+              <label className={styles['file-label']}>Исходник</label>
               <input type="file" onChange={(e) => setSource(e.target.files[0])} />
             </div>
 
-            <button type="submit">Создать</button>
+            <button type="submit" className={styles['submit-button']}>Создать</button>
           </form>
         </div>
       </main>

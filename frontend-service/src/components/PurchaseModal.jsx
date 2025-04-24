@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../styles/PurchaseModal.css';
+import styles from '../styles/PurchaseModal.module.css'; // импорт стилей
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -19,7 +19,7 @@ const PurchaseModal = ({ resourceId, onClose }) => {
     }
     try {
       const res = await axios.post(
-        `${process.env.REACT_APP_API_GATEWAY_SERVER_URL}/mcs/api/v1/purchase/${resourceId}?email=${encodeURIComponent(email)}`
+        `${process.env.REACT_APP_API_GATEWAY_SERVER_URL}/tos/api/v1/sale/${resourceId}?email=${encodeURIComponent(email)}`
       );
 
       // Извлекаем ID из ответа и переходим на страницу подтверждения
@@ -32,9 +32,9 @@ const PurchaseModal = ({ resourceId, onClose }) => {
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <button className="close-btn" onClick={onClose}>×</button>
+    <div className={styles['modal-overlay']}>
+      <div className={styles['modal-content']}>
+        <button className={styles['close-btn']} onClick={onClose}>×</button>
         <h3>Оформление покупки</h3>
         <p>Укажите вашу почту. После успешной оплаты ссылка на скачивание будет отправлена именно на нее.</p>
         <input
@@ -46,10 +46,11 @@ const PurchaseModal = ({ resourceId, onClose }) => {
             setError('');
             setSuccessMessage('');
           }}
+          className={styles['input']}
         />
-        {error && <p className="error-msg">{error}</p>}
-        {successMessage && <p className="success-msg">{successMessage}</p>}
-        <button className="submit-btn" onClick={handlePurchase}>Перейти к оформлению</button>
+        {error && <p className={styles['error-msg']}>{error}</p>}
+        {successMessage && <p className={styles['success-msg']}>{successMessage}</p>}
+        <button className={styles['submit-btn']} onClick={handlePurchase}>Перейти к оформлению</button>
       </div>
     </div>
   );

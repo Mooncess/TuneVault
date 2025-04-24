@@ -3,6 +3,6 @@ export const GENRES = [
   ];
   
   export const TYPES = [
-    'Beat', 'Drum Kit', 'Loop', 'Preset Kit'
+    'Drum Kit', 'Loop Kit', 'Loop', 'Midi Kit', 'Preset Bank', 'One Shots'
   ];
   

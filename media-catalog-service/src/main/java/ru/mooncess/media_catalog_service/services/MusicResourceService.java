@@ -7,7 +7,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import ru.mooncess.media_catalog_service.domain.AuthorSaleInfo;
 import ru.mooncess.media_catalog_service.domain.MusicResourceInfo;
+import ru.mooncess.media_catalog_service.domain.MusicResourceSaleInfo;
 import ru.mooncess.media_catalog_service.domain.enums.MusicResourceStatus;
 import ru.mooncess.media_catalog_service.dto.MusicFileURI;
 import ru.mooncess.media_catalog_service.dto.UpdateMusicResourceInfo;
@@ -19,6 +21,7 @@ import ru.mooncess.media_catalog_service.mappers.MusicResourceMapper;
 import ru.mooncess.media_catalog_service.repositories.MusicResourceRepository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -174,5 +177,26 @@ public class MusicResourceService {
         return repository.findAllByProducer(producer)
                 .stream().filter(i -> !i.getStatus().equals(MusicResourceStatus.BLOCKED))
                 .toList();
+    }
+
+    public MusicResourceSaleInfo getMusicResourceSaleInfo(Long id) {
+        MusicResourceSaleInfo info = new MusicResourceSaleInfo();
+
+        MusicResource mr = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Music Resource Not found with ID: " + id));
+
+        List<AuthorSaleInfo> list = new ArrayList<>();
+
+        info.setSourceURI(mr.getSourceURI());
+        authorService.findAuthorsOfResource(id)
+                .forEach(i -> {
+                    AuthorSaleInfo authorSaleInfo = new AuthorSaleInfo();
+                    authorSaleInfo.setProducerId(i.getProducer().getId());
+                    authorSaleInfo.setPercentageOfSale(i.getPercentageOfSale());
+                    list.add(authorSaleInfo);
+                });
+
+        info.setAuthorInfoList(list);
+        return info;
     }
 }

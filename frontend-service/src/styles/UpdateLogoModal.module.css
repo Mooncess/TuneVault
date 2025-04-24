@@ -1,0 +1,79 @@
+.update-logo-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.update-logo-modal {
+  background-color: rgb(34, 34, 34);
+  padding: 24px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  color: white;
+}
+
+.update-logo-modal h2 {
+  margin-bottom: 20px;
+  font-size: 22px;
+  color: rgb(29, 205, 159);
+  text-align: center;
+}
+
+.update-logo-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.update-logo-input {
+  padding: 10px;
+  border: 1px solid rgb(29, 205, 159);
+  border-radius: 6px;
+  background-color: rgb(0, 0, 0);
+  color: white;
+  font-size: 16px;
+}
+
+.update-logo-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+.update-logo-btn {
+  flex: 1;
+  padding: 10px;
+  margin: 0 5px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  color: white;
+}
+
+.update-logo-btn.confirm {
+  background-color: rgb(29, 205, 159);
+}
+
+.update-logo-btn.confirm:hover {
+  background-color: rgb(22, 153, 118);
+}
+
+.update-logo-btn.cancel {
+  background-color: rgb(34, 34, 34);
+  border: 1px solid rgb(29, 205, 159);
+}
+
+.update-logo-btn.cancel:hover {
+  background-color: rgb(0, 0, 0);
+}

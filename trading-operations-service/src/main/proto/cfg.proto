@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+option java_package = "ru.mooncess.grpc";
+option java_outer_classname = "PaymentServiceProto";
+
+
+service PaymentService {
+  rpc CreatePaymentForm (PaymentRequest) returns (PaymentResponse) {}
+}
+
+service WithdrawService {
+  rpc CreateWithdrawForm (WithdrawRequest) returns (WithdrawResponse) {}
+}
+
+message PaymentRequest {
+  int64 id = 1;
+  string amount = 2;
+  string redirect_url = 3;
+}
+
+message PaymentResponse {
+  string payment_url = 1;
+}
+
+message WithdrawRequest {
+  int64 id = 1;
+  string amount = 2;
+  string destination = 3;
+}
+
+message WithdrawResponse {
+  bool success = 1;
+}

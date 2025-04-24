@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import '../styles/MusicCard.css';
+import styles from '../styles/MusicCard.module.css'; // ✅ импорт как модуль
 
 const MusicCard = ({ id, name, price, coverURI, demoURI, type, producer, playingId, handlePlay }) => {
   const navigate = useNavigate();
@@ -63,17 +63,17 @@ const MusicCard = ({ id, name, price, coverURI, demoURI, type, producer, playing
   };
 
   return (
-    <div className="music-card" onClick={handleCardClick}>
+    <div className={styles.musicCard} onClick={handleCardClick}>
       {coverUrl && (
-        <img src={coverUrl} alt={name} className="music-cover" />
+        <img src={coverUrl} alt={name} className={styles.musicCover} />
       )}
-      <div className="music-info">
-        <div className="music-name">{name}</div>
-        <div className="music-type"><em>{type}</em></div>
-        <div className="music-producer"><b>{producer}</b></div>
-        <div className="music-price">{price}₽</div>
+      <div className={styles.musicInfo}>
+        <div className={styles.musicName}>{name}</div>
+        <div className={styles.musicType}><em>{type}</em></div>
+        <div className={styles.musicProducer}><b>{producer}</b></div>
+        <div className={styles.musicPrice}>{price}₽</div>
       </div>
-      <button className="play-button" onClick={handlePlayClick}>
+      <button className={styles.playButton} onClick={handlePlayClick}>
         {isPlaying ? 'Pause' : 'Play'}
       </button>
       {demoUrl && <audio ref={audioRef} src={demoUrl} />}

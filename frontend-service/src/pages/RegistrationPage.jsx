@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../utils/AxiosInstance';
 import MyFooter from '../components/Footer';
 import MyNavbar from '../components/Navbar';
-import '../styles/RegistrationPage.css';
+import styles from '../styles/RegistrationPage.module.css'; // Импорт стилей как модуля
 
 const RegistrationPage = () => {
     const navigate = useNavigate();
@@ -39,14 +39,14 @@ const RegistrationPage = () => {
     return (
         <div>
             <MyNavbar />
-            <div className="registration-container">
+            <div className={styles['registration-container']}>
                 <h2>Регистрация</h2>
                 <input
                     required
                     type="email"
                     placeholder="Email"
                     value={username}
-                    className="reg-input"
+                    className={styles['reg-input']}
                     onChange={(e) => setUsername(e.target.value)}
                 />
                 <input
@@ -54,7 +54,7 @@ const RegistrationPage = () => {
                     type="password"
                     placeholder="Пароль"
                     value={password}
-                    className="reg-input"
+                    className={styles['reg-input']}
                     onChange={(e) => setPassword(e.target.value)}
                 />
                 <input
@@ -62,14 +62,14 @@ const RegistrationPage = () => {
                     type="text"
                     placeholder="Никнейм"
                     value={nickname}
-                    className="reg-input"
+                    className={styles['reg-input']}
                     onChange={(e) => setNickname(e.target.value)}
                 />
 
-                {error && <p style={{ color: 'red' }}>{error}</p>}
+                {error && <p className={styles['error-text']}>{error}</p>}
 
-                <button onClick={handleRegister} className="black-button">Зарегистрироваться</button>
-                <button onClick={handleLoginRedirect} className="black-button">Уже есть аккаунт</button>
+                <button onClick={handleRegister} className={styles['black-button']}>Зарегистрироваться</button>
+                <button onClick={handleLoginRedirect} className={styles['black-button']}>Уже есть аккаунт</button>
             </div>
             <MyFooter />
         </div>

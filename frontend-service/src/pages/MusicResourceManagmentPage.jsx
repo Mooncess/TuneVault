@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../utils/AxiosInstance';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import '../styles/MusicResourceManagmentPage.css';
+import styles from '../styles/MusicResourceManagmentPage.module.css'; // Импорт стилей как модуля
 
 function MusicResourceManagmentPage() {
   const [resources, setResources] = useState([]);
@@ -30,42 +30,42 @@ function MusicResourceManagmentPage() {
   };
 
   return (
-    <div className="layout">
+    <div className={styles.layout}>
       <Navbar />
-      <main className="main-content">
-      <div className="page-container">
-        <h1 className="page-title">Мои ресурсы</h1>
-        <div className="table-wrapper">
-          <table className="resource-table">
-            <thead>
-              <tr>
-                <th>Название</th>
-                <th>Жанр</th>
-                <th>Тип</th>
-                <th>Цена</th>
-                <th>Статус</th>
-                <th>Дата создания</th>
-              </tr>
-            </thead>
-            <tbody>
-              {resources.map(resource => (
-                <tr
-                  key={resource.id}
-                  onClick={() => handleRowClick(resource.id)}
-                  className="table-row"
-                >
-                  <td>{resource.name}</td>
-                  <td>{resource.genre}</td>
-                  <td>{resource.type}</td>
-                  <td>{resource.price}₽</td>
-                  <td>{resource.status}</td>
-                  <td>{resource.creationDate?.slice(0, 10)}</td>
+      <main className={styles['main-content']}>
+        <div className={styles['page-container']}>
+          <h1 className={styles['page-title']}>Мои ресурсы</h1>
+          <div className={styles['table-wrapper']}>
+            <table className={styles['resource-table']}>
+              <thead>
+                <tr>
+                  <th>Название</th>
+                  <th>Жанр</th>
+                  <th>Тип</th>
+                  <th>Цена</th>
+                  <th>Статус</th>
+                  <th>Дата создания</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {resources.map((resource) => (
+                  <tr
+                    key={resource.id}
+                    onClick={() => handleRowClick(resource.id)}
+                    className={styles['table-row']}
+                  >
+                    <td>{resource.name}</td>
+                    <td>{resource.genre}</td>
+                    <td>{resource.type}</td>
+                    <td>{resource.price}₽</td>
+                    <td>{resource.status}</td>
+                    <td>{resource.creationDate?.slice(0, 10)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
       </main>
       <Footer />
     </div>

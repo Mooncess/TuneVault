@@ -76,7 +76,6 @@ public class MinioController {
                 return ResponseEntity.status(HttpStatus.CREATED).build();
             }
         } catch (Exception e) {
-            System.out.println("SUKAAAA");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
@@ -150,25 +149,25 @@ public class MinioController {
         }
     }
 
-    @PostMapping("/upload/logo")
-    public ResponseEntity<?> uploadLogo(@RequestPart MultipartFile logo,
-                                        HttpServletRequest httpRequest) {
-
-        JwtInfo jwtInfo = jwtChecker.checkToken(httpRequest);
-        if (!isValidUser(jwtInfo)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
-        String logoURI = minioComponent.generateUniqueFileName(logo);
-
-        try {
-            mediaCatalogClient.uploadLogo(jwtInfo.getUsername(), logoURI, secretApiKey);
-            minioComponent.putResource(logo, logoURI, logoBucket);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
+//    @PostMapping("/upload/logo")
+//    public ResponseEntity<?> uploadLogo(@RequestPart MultipartFile logo,
+//                                        HttpServletRequest httpRequest) {
+//
+//        JwtInfo jwtInfo = jwtChecker.checkToken(httpRequest);
+//        if (!isValidUser(jwtInfo)) {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+//        }
+//
+//        String logoURI = minioComponent.generateUniqueFileName(logo);
+//
+//        try {
+//            mediaCatalogClient.uploadLogo(jwtInfo.getUsername(), logoURI, secretApiKey);
+//            minioComponent.putResource(logo, logoURI, logoBucket);
+//            return ResponseEntity.ok().build();
+//        } catch (Exception e) {
+//            return ResponseEntity.badRequest().build();
+//        }
+//    }
 
     @PutMapping("/update/logo")
     public ResponseEntity<?> updateLogo(@RequestPart MultipartFile logo,
@@ -181,6 +180,15 @@ public class MinioController {
 
         try {
             String logoURI = mediaCatalogClient.updateLogo(jwtInfo.getUsername(), secretApiKey).getBody();
+
+            if (logoURI.equals("") || logoURI.equals("default-logo-uri.jpg")) {
+                logoURI = minioComponent.generateUniqueFileName(logo);
+
+                mediaCatalogClient.uploadLogo(jwtInfo.getUsername(), logoURI, secretApiKey);
+                minioComponent.putResource(logo, logoURI, logoBucket);
+                return ResponseEntity.ok().build();
+            }
+
             minioComponent.putResource(logo, logoURI, logoBucket);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
@@ -273,7 +281,6 @@ public class MinioController {
     @GetMapping("/media")
     public ResponseEntity<Resource> getMediaFile(@RequestParam String name,
                                                  @RequestParam String type) {
-        System.out.println("POINT1");
         try {
             byte[] data;
             String contentType;

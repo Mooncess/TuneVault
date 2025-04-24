@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "../styles/CoAuthorForm.css";
+import styles from "../styles/CoAuthorForm.module.css";
 
 export default function CoAuthorForm({ ownerEmail, onChange }) {
   const [coAuthors, setCoAuthors] = useState([]);
@@ -40,16 +40,16 @@ export default function CoAuthorForm({ ownerEmail, onChange }) {
   };
 
   return (
-    <div className="coauthors-container">
-      <div className="coauthor-row owner">
-        <label className="email-label">{ownerEmail}</label>
-        <label className="percentage-label">{ownerPercentage}%</label>
+    <div className={styles['coauthors-container']}>
+      <div className={`${styles['coauthor-row']} ${styles['owner']}`}>
+        <label className={styles['email-label']}>{ownerEmail}</label>
+        <label className={styles['percentage-label']}>{ownerPercentage}%</label>
       </div>
 
       {coAuthors.map((coAuthor, index) => (
-        <div className="coauthor-row" key={index}>
+        <div className={styles['coauthor-row']} key={index}>
           <input
-            className="email-input"
+            className={styles['email-input']}
             type="email"
             placeholder="Email соавтора"
             value={coAuthor.coAuthorEmail}
@@ -58,7 +58,7 @@ export default function CoAuthorForm({ ownerEmail, onChange }) {
             }
           />
           <input
-            className="percentage-input"
+            className={styles['percentage-input']}
             type="number"
             min="0"
             max="100"
@@ -69,7 +69,7 @@ export default function CoAuthorForm({ ownerEmail, onChange }) {
           />
           <button
             type="button"
-            className="remove-button"
+            className={styles['remove-button']}
             onClick={() => handleRemove(index)}
           >
             −
@@ -77,11 +77,11 @@ export default function CoAuthorForm({ ownerEmail, onChange }) {
         </div>
       ))}
 
-      <button type="button" className="add-button" onClick={handleAdd}>
+      <button type="button" className={styles['add-button']} onClick={handleAdd}>
         + Добавить соавтора
       </button>
 
-      {error && <div className="error-message">{error}</div>}
+      {error && <div className={styles['error-message']}>{error}</div>}
     </div>
   );
 }

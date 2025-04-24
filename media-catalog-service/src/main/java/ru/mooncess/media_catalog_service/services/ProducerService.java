@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.mooncess.media_catalog_service.client.AuthServClient;
+import ru.mooncess.media_catalog_service.client.TradingOperationServClient;
 import ru.mooncess.media_catalog_service.domain.enums.MusicResourceStatus;
 import ru.mooncess.media_catalog_service.domain.enums.UserStatus;
 import ru.mooncess.media_catalog_service.dto.ProducerInfo;
@@ -24,6 +25,7 @@ public class ProducerService {
     private final MusicResourceRepository musicResourceRepository;
     private final AuthServClient authServClient;
     private final MessageSender messageSender;
+    private final TradingOperationServClient tradingOperationServClient;
     @Value("${msg.subject}")
     private String msgSubject;
     @Value("${mcs.api.key}")
@@ -34,7 +36,10 @@ public class ProducerService {
     public boolean createNewProducer(ProducerInfo producerInfo) {
         Optional<Producer> optionalProducer = producerRepository.findByEmail(producerInfo.getEmail());
         if (optionalProducer.isEmpty()) {
+            Long id = tradingOperationServClient.createNewProducerBalance(producerInfo.getEmail(), secretApiKey).getBody();
+
             Producer producer = new Producer();
+            producer.setId(id);
             producer.setNickname(producerInfo.getNickname());
             producer.setUserStatus(UserStatus.ACTIVE);
             producer.setRegistrationDate(LocalDate.now());

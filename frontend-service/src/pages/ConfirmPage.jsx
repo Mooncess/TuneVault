@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import styles from '../styles/ConfirmPage.module.css'; // Импорт стилей как модуля
 
 const ConfirmPage = () => {
   const { id } = useParams();
@@ -10,7 +11,7 @@ const ConfirmPage = () => {
 
   const handlePayment = async () => {
     try {
-      await axios.put(`${process.env.REACT_APP_API_GATEWAY_SERVER_URL}/mcs/api/v1/purchase/confirm/${id}`);
+      await axios.put(`${process.env.REACT_APP_API_GATEWAY_SERVER_URL}/tos/api/v1/sale/confirm/${id}`);
       setSuccess(true);
       setTimeout(() => navigate('/'), 5000);
     } catch (err) {
@@ -19,29 +20,20 @@ const ConfirmPage = () => {
   };
 
   return (
-    <div style={{ padding: '2rem', textAlign: 'center' }}>
+    <div className={styles['container']}>
       <h2>Платежная форма</h2>
       {!success ? (
         <>
           <button
             onClick={handlePayment}
-            style={{
-              marginTop: '1rem',
-              padding: '0.5rem 1.5rem',
-              fontSize: '1rem',
-              backgroundColor: '#4CAF50',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer'
-            }}
+            className={styles['pay-btn']}
           >
             Оплатить
           </button>
-          {error && <p style={{ color: 'red', marginTop: '1rem' }}>{error}</p>}
+          {error && <p className={styles['error-message']}>{error}</p>}
         </>
       ) : (
-        <p style={{ color: 'green', fontSize: '1.2rem' }}>Оплата прошла успешно! Возвращаем на главную...</p>
+        <p className={styles['success-message']}>Оплата прошла успешно! Возвращаем на главную...</p>
       )}
     </div>
   );

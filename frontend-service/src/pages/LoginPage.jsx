@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../utils/AxiosInstance';
 import MyFooter from '../components/Footer';
 import MyNavbar from '../components/Navbar';
-import '../styles/LoginPage.css';
+import styles from '../styles/LoginPage.module.css'; // Импортируем как модуль стилей
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -37,15 +37,29 @@ const LoginPage = () => {
     return (
         <div>
             <MyNavbar />
-            <div className="login-container">
-                <h2>Вход</h2>
-                <input required type="login" placeholder="Email" value={login} className="log-input" onChange={(e) => setLogin(e.target.value)} />
-                <input required type="password" placeholder="Пароль" value={password} className="log-input" onChange={(e) => setPassword(e.target.value)} />
+            <div className={styles['login-container']}>
+                <h2 className={styles['title']}>Вход</h2>
+                <input 
+                    required 
+                    type="login" 
+                    placeholder="Email" 
+                    value={login} 
+                    className={styles['log-input']} 
+                    onChange={(e) => setLogin(e.target.value)} 
+                />
+                <input 
+                    required 
+                    type="password" 
+                    placeholder="Пароль" 
+                    value={password} 
+                    className={styles['log-input']} 
+                    onChange={(e) => setPassword(e.target.value)} 
+                />
                 
-                {error && <p style={{ color: 'red' }}>{error}</p>}
+                {error && <p className={styles['error-message']}>{error}</p>}
 
-                <button onClick={handleLogin} className="black-button">Войти</button>
-                <button onClick={handleRegistrationRedirect} className="black-button">Зарегистрироваться</button>
+                <button onClick={handleLogin} className={styles['black-button']}>Войти</button>
+                <button onClick={handleRegistrationRedirect} className={styles['black-button']}>Зарегистрироваться</button>
             </div>
             <MyFooter />
         </div>

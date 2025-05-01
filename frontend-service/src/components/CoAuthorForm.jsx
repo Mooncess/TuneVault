@@ -18,9 +18,16 @@ export default function CoAuthorForm({ ownerEmail, onChange }) {
       setError("");
     }
 
+    const validCoAuthors = coAuthors.filter(
+      (a) => a.coAuthorEmail && a.percentageOfSale > 0
+    );
+
     onChange([
       { email: ownerEmail, percentageOfSale: ownerPercentage },
-      ...coAuthors,
+      ...validCoAuthors.map((a) => ({
+        email: a.coAuthorEmail,
+        percentageOfSale: Number(a.percentageOfSale),
+      })),
     ]);
   }, [coAuthors]);
 
@@ -40,16 +47,16 @@ export default function CoAuthorForm({ ownerEmail, onChange }) {
   };
 
   return (
-    <div className={styles['coauthors-container']}>
-      <div className={`${styles['coauthor-row']} ${styles['owner']}`}>
-        <label className={styles['email-label']}>{ownerEmail}</label>
-        <label className={styles['percentage-label']}>{ownerPercentage}%</label>
+    <div className={styles["coauthors-container"]}>
+      <div className={`${styles["coauthor-row"]} ${styles["owner"]}`}>
+        <label className={styles["email-label"]}>{ownerEmail}</label>
+        <label className={styles["percentage-label"]}>{ownerPercentage}%</label>
       </div>
 
       {coAuthors.map((coAuthor, index) => (
-        <div className={styles['coauthor-row']} key={index}>
+        <div className={styles["coauthor-row"]} key={index}>
           <input
-            className={styles['email-input']}
+            className={styles["email-input"]}
             type="email"
             placeholder="Email соавтора"
             value={coAuthor.coAuthorEmail}
@@ -58,7 +65,7 @@ export default function CoAuthorForm({ ownerEmail, onChange }) {
             }
           />
           <input
-            className={styles['percentage-input']}
+            className={styles["percentage-input"]}
             type="number"
             min="0"
             max="100"
@@ -69,7 +76,7 @@ export default function CoAuthorForm({ ownerEmail, onChange }) {
           />
           <button
             type="button"
-            className={styles['remove-button']}
+            className={styles["remove-button"]}
             onClick={() => handleRemove(index)}
           >
             −
@@ -77,11 +84,11 @@ export default function CoAuthorForm({ ownerEmail, onChange }) {
         </div>
       ))}
 
-      <button type="button" className={styles['add-button']} onClick={handleAdd}>
+      <button type="button" className={styles["add-button"]} onClick={handleAdd}>
         + Добавить соавтора
       </button>
 
-      {error && <div className={styles['error-message']}>{error}</div>}
+      {error && <div className={styles["error-message"]}>{error}</div>}
     </div>
   );
 }

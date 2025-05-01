@@ -1,0 +1,68 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: rgb(34, 34, 34);
+  color: white;
+}
+
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  text-align: center;
+}
+
+.title {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: rgb(29, 205, 159);
+}
+
+.producer-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.producer-card {
+  background-color: rgb(0, 0, 0);
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: transform 0.2s;
+  text-align: center;
+}
+
+.producer-card:hover {
+  transform: scale(1.05);
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.profile-logo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgb(29, 205, 159); /* Контур вокруг аватарки */
+}
+
+.nickname {
+  font-size: 1.2rem;
+  color: rgb(29, 205, 159);
+  font-weight: bold;
+}
+
+footer {
+  margin-top: auto; /* Футер будет внизу */
+  background-color: rgb(0, 0, 0);
+  padding: 1rem;
+  text-align: center;
+  color: white;
+}

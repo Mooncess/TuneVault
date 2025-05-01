@@ -1,0 +1,74 @@
+.edit-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .edit-modal-content {
+    background: rgb(34, 34, 34);
+    color: white;
+    padding: 2rem;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 450px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+    position: relative;
+  }
+  
+  .edit-close-btn {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .input-field,
+  .textarea-field {
+    width: 100%;
+    padding: 0.75rem;
+    margin: 1rem 0;
+    background: rgb(0, 0, 0);
+    border: 1px solid rgb(22, 153, 118);
+    color: white;
+    border-radius: 10px;
+    font-size: 1rem;
+  }
+  
+  .textarea-field {
+    min-height: 100px;
+    resize: vertical;
+  }
+  
+  .edit-save-btn {
+    background-color: rgb(29, 205, 159);
+    color: black;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.2s;
+  }
+  
+  .edit-save-btn:hover {
+    background-color: rgb(22, 153, 118);
+  }
+  
+  .edit-error {
+    color: rgb(255, 100, 100);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
+  

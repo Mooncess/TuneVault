@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import styles from '../styles/MusicCard.module.css'; // ✅ импорт как модуль
+import styles from '../styles/MusicCard.module.css';
 
 const MusicCard = ({ id, name, price, coverURI, demoURI, type, producer, playingId, handlePlay }) => {
   const navigate = useNavigate();
@@ -71,12 +71,19 @@ const MusicCard = ({ id, name, price, coverURI, demoURI, type, producer, playing
         <div className={styles.musicName}>{name}</div>
         <div className={styles.musicType}><em>{type}</em></div>
         <div className={styles.musicProducer}><b>{producer}</b></div>
-        <div className={styles.musicPrice}>{price}₽</div>
+        <div className={styles.musicPrice}>
+          {price === 0 ? 'FREE' : `${price}₽`}
+        </div>
       </div>
-      <button className={styles.playButton} onClick={handlePlayClick}>
-        {isPlaying ? 'Pause' : 'Play'}
-      </button>
-      {demoUrl && <audio ref={audioRef} src={demoUrl} />}
+
+      {demoUrl && (
+        <>
+          <button className={styles.playButton} onClick={handlePlayClick}>
+            {isPlaying ? 'Pause' : 'Play'}
+          </button>
+          <audio ref={audioRef} src={demoUrl} />
+        </>
+      )}
     </div>
   );
 };

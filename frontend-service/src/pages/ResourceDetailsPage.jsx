@@ -3,10 +3,11 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import MyFooter from '../components/Footer';
 import MyNavbar from '../components/Navbar';
-import styles from '../styles/ResourceDetailsPage.module.css'; // Импорт стилей как модуля
+import styles from '../styles/ResourceDetailsPage.module.css';
 import AudioPlayer from 'react-h5-audio-player';
 import 'react-h5-audio-player/lib/styles.css';
-import PurchaseModal from '../components/PurchaseModal'; // модалка покупки
+import PurchaseModal from '../components/PurchaseModal';
+import ClaimModal from '../components/ClaimModal';
 
 const ResourceDetailsPage = () => {
   const { id } = useParams();
@@ -15,6 +16,7 @@ const ResourceDetailsPage = () => {
   const [coverUrl, setCoverUrl] = useState('');
   const [demoUrl, setDemoUrl] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isClaimOpen, setIsClaimOpen] = useState(false);
   const audioRef = useRef(null);
 
   useEffect(() => {
@@ -77,9 +79,11 @@ const ResourceDetailsPage = () => {
             <p><strong>Жанр:</strong> {music.genre}</p>
             <p><strong>Цена:</strong> {music.price}₽</p>
 
-            <button className={styles['buy-button']} onClick={openModal}>
-              Купить
-            </button>
+            <div className={styles['buttons-group']}>
+              <button className={styles['buy-button']} onClick={openModal}>
+                Купить
+              </button>
+            </div>
           </div>
         </div>
 
@@ -106,12 +110,25 @@ const ResourceDetailsPage = () => {
           )}
           <p><strong>Дата создания:</strong> {music.creationDate}</p>
         </div>
+
+        <div className={styles['claim-section']}>
+          <button className={styles['claim-button']} onClick={() => setIsClaimOpen(true)}>
+            Пожаловаться
+          </button>
+        </div>
       </div>
 
       {isModalOpen && (
         <PurchaseModal
           resourceId={music.id}
           onClose={closeModal}
+        />
+      )}
+
+      {isClaimOpen && (
+        <ClaimModal
+          musicId={music.id}
+          onClose={() => setIsClaimOpen(false)}
         />
       )}
 

@@ -149,26 +149,6 @@ public class MinioController {
         }
     }
 
-//    @PostMapping("/upload/logo")
-//    public ResponseEntity<?> uploadLogo(@RequestPart MultipartFile logo,
-//                                        HttpServletRequest httpRequest) {
-//
-//        JwtInfo jwtInfo = jwtChecker.checkToken(httpRequest);
-//        if (!isValidUser(jwtInfo)) {
-//            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-//        }
-//
-//        String logoURI = minioComponent.generateUniqueFileName(logo);
-//
-//        try {
-//            mediaCatalogClient.uploadLogo(jwtInfo.getUsername(), logoURI, secretApiKey);
-//            minioComponent.putResource(logo, logoURI, logoBucket);
-//            return ResponseEntity.ok().build();
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest().build();
-//        }
-//    }
-
     @PutMapping("/update/logo")
     public ResponseEntity<?> updateLogo(@RequestPart MultipartFile logo,
                                         HttpServletRequest httpRequest) {

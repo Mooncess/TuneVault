@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.mooncess.media_catalog_service.domain.AuthorSaleInfo;
 import ru.mooncess.media_catalog_service.domain.MusicResourceInfo;
 import ru.mooncess.media_catalog_service.domain.MusicResourceSaleInfo;
@@ -33,6 +34,7 @@ public class MusicResourceService {
     private final MusicResourceRepository repository;
     private final AuthorService authorService;
 
+    @Transactional
     public boolean createNewMusicResource(MusicResourceInfo info, String email) {
         if (!authorService.checkAuthors(email, info.getAuthors())) return false;
 
@@ -175,7 +177,7 @@ public class MusicResourceService {
 
     public List<MusicResource> getProducersResources(Producer producer) {
         return repository.findAllByProducer(producer)
-                .stream().filter(i -> !i.getStatus().equals(MusicResourceStatus.BLOCKED))
+                .stream().filter(i -> !i.getStatus().equals(MusicResourceStatus.BLOCKED) && !i.getStatus().equals(MusicResourceStatus.DELETED))
                 .toList();
     }
 
@@ -198,5 +200,21 @@ public class MusicResourceService {
 
         info.setAuthorInfoList(list);
         return info;
+    }
+
+    public void availableMusicResource(Long id) {
+        var musicResource = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Music Resource not found with id: " + id));
+
+        musicResource.setStatus(MusicResourceStatus.AVAILABLE);
+        repository.save(musicResource);
+    }
+
+    public void deleteMusicResource(Long id) {
+        var musicResource = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Music Resource not found with id: " + id));
+
+        musicResource.setStatus(MusicResourceStatus.DELETED);
+        repository.save(musicResource);
     }
 }

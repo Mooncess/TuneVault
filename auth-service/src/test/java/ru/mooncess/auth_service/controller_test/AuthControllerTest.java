@@ -60,7 +60,7 @@ public class AuthControllerTest {
 
         JwtResponse response = new JwtResponse("accessToken", "refreshToken");
 
-        when(authService.login(any(JwtRequest.class))).thenReturn(response);
+        when(authService.userLogin(any(JwtRequest.class))).thenReturn(response);
 
         mockMvc.perform(post("/api/v1/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -81,7 +81,7 @@ public class AuthControllerTest {
         request.setLogin("wrongUser");
         request.setPassword("wrongPassword");
 
-        when(authService.login(any(JwtRequest.class))).thenThrow(new AuthException("The user was not found"));
+        when(authService.userLogin(any(JwtRequest.class))).thenThrow(new AuthException("The user was not found"));
 
         mockMvc.perform(post("/api/v1/login")
                         .contentType(MediaType.APPLICATION_JSON)

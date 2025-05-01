@@ -23,10 +23,26 @@ public class AuthService {
     private final RedisService redisService;
     private final JwtProvider jwtProvider;
 
-    public JwtResponse login(@NonNull JwtRequest authRequest) throws AuthException {
+    public JwtResponse adminLogin(@NonNull JwtRequest authRequest) throws AuthException {
+        System.out.println("HERE " + authRequest.getLogin());
         final User user = userService.findByUsername(authRequest.getLogin())
                 .orElseThrow(() -> new AuthException("The user was not found"));
-        if (user.getStatus().equals(Status.INACTIVE) || user.getStatus().equals(Status.BLOCKED)) throw new AuthException("Access to the account is prohibited");
+        if (user.getStatus().equals(Status.INACTIVE) || user.getStatus().equals(Status.BLOCKED) || !user.getRole().equals(Role.ADMIN)) throw new AuthException("Access to the account is prohibited");
+        if (SecurityConfig.passwordEncoder().matches(authRequest.getPassword(), user.getPassword())) {
+            final String accessToken = jwtProvider.generateAccessToken(user);
+            System.out.println(user.getStatus());
+            final String refreshToken = jwtProvider.generateRefreshToken(user);
+            redisService.save(user.getUsername(), refreshToken);
+            return new JwtResponse(accessToken, refreshToken);
+        } else {
+            throw new AuthException("Incorrect password");
+        }
+    }
+
+    public JwtResponse userLogin(@NonNull JwtRequest authRequest) throws AuthException {
+        final User user = userService.findByUsername(authRequest.getLogin())
+                .orElseThrow(() -> new AuthException("The user was not found"));
+        if (user.getStatus().equals(Status.INACTIVE) || user.getStatus().equals(Status.BLOCKED) || user.getStatus().equals(Status.ADMIN)) throw new AuthException("Access to the account is prohibited");
         if (SecurityConfig.passwordEncoder().matches(authRequest.getPassword(), user.getPassword())) {
             final String accessToken = jwtProvider.generateAccessToken(user);
             final String refreshToken = jwtProvider.generateRefreshToken(user);

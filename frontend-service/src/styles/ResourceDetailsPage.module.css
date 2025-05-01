@@ -173,3 +173,37 @@
 .custom-audio-player .rhap_seek-bar .rhap_seek-bar-thumb {
   background-color: rgb(29, 205, 159); /* Зеленая кнопка ползунка */
 }
+
+/* Добавьте в конец файла: */
+
+.claim-section {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.claim-button {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  background-color: transparent;
+  color: rgb(29, 205, 159);
+  border: 2px solid rgb(29, 205, 159);
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.claim-button:hover {
+  background-color: rgb(22, 153, 118);
+  color: rgb(0, 0, 0);
+  border-color: rgb(22, 153, 118);
+}
+
+.claim-button:active {
+  background-color: rgb(0, 100, 80);
+  border-color: rgb(0, 100, 80);
+}
+

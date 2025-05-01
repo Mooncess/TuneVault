@@ -31,8 +31,23 @@ public class AuthController {
     private String secretApiKey;
 
     @PostMapping("login")
-    public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest authRequest) {
-        final JwtResponse token = authService.login(authRequest);
+    public ResponseEntity<JwtResponse> userLogin(@RequestBody JwtRequest authRequest) {
+        System.out.println("USER");
+        final JwtResponse token = authService.userLogin(authRequest);
+        HttpHeaders headers = new HttpHeaders();
+
+        headers.add("Set-Cookie", "access=" + token.getAccessToken() + "; Path=/; Max-Age=3600; HttpOnly");
+        headers.add("Set-Cookie", "refresh=" + token.getRefreshToken() + "; Path=/auth/api; Max-Age=3600; HttpOnly");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(token);
+    }
+
+    @PostMapping("/admin-login")
+    public ResponseEntity<JwtResponse> adminLogin(@RequestBody JwtRequest authRequest) {
+        System.out.println("ADMIN");
+        final JwtResponse token = authService.adminLogin(authRequest);
         HttpHeaders headers = new HttpHeaders();
 
         headers.add("Set-Cookie", "access=" + token.getAccessToken() + "; Path=/; Max-Age=3600; HttpOnly");
@@ -116,8 +131,6 @@ public class AuthController {
                                                          Authentication authentication) {
         String refreshToken = getCookieValue(servletRequest);
 
-        System.out.println("POINT " + refreshToken);
-
         if (refreshToken == null) {
             return ResponseEntity.badRequest().build();
         }
@@ -179,9 +192,7 @@ public class AuthController {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                System.out.println(cookie.getName());
                 if (cookie.getName().equals("refresh")) {
-                    System.out.println(cookie.getValue());
                     return cookie.getValue();
                 }
             }

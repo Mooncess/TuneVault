@@ -16,6 +16,7 @@ import ru.mooncess.admin_panel_service.repository.ClaimRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -94,5 +95,9 @@ public class ClaimService {
 
         claim.setStatus(ClaimStatus.ACCEPTED);
         claimRepository.save(claim);
+    }
+
+    public Optional<Claim> findAllClaimById(Long id) {
+        return claimRepository.findById(id);
     }
 }

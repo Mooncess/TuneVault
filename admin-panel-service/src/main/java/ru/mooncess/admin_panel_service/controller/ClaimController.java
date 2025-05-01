@@ -38,18 +38,33 @@ public class ClaimController {
                                                      @RequestParam(required = false, defaultValue = "0") int sort,
                                                      HttpServletRequest httpRequest) {
         JwtInfo jwtInfo = jwtChecker.checkToken(httpRequest);
-        if (!isValidAdmin(jwtInfo)) {
+
+        if (jwtInfo == null || !isValidAdmin(jwtInfo)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         return ResponseEntity.ok(claimService.findAllClaimsByStatus(status, sort));
     }
 
+    @GetMapping("/{id}")
+    ResponseEntity<?> findAllClaimByStatus(@PathVariable Long id,
+                                                     HttpServletRequest httpRequest) {
+        JwtInfo jwtInfo = jwtChecker.checkToken(httpRequest);
+
+        if (jwtInfo == null || !isValidAdmin(jwtInfo)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        return claimService.findAllClaimById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     @GetMapping("/music-resource/{claimId}")
     ResponseEntity<?> getMusicResourceFromClaim(@PathVariable Long claimId,
                                                 HttpServletRequest httpRequest) {
         JwtInfo jwtInfo = jwtChecker.checkToken(httpRequest);
-        if (!isValidAdmin(jwtInfo)) {
+        if (jwtInfo == null || !isValidAdmin(jwtInfo)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         try {
@@ -65,7 +80,7 @@ public class ClaimController {
     ResponseEntity<?> acceptClaim(@PathVariable Long claimId,
                                   HttpServletRequest httpRequest) {
         JwtInfo jwtInfo = jwtChecker.checkToken(httpRequest);
-        if (!isValidAdmin(jwtInfo)) {
+        if (jwtInfo == null || !isValidAdmin(jwtInfo)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         try {
@@ -82,7 +97,7 @@ public class ClaimController {
     ResponseEntity<?> reviewClaim(@PathVariable Long claimId,
                                   HttpServletRequest httpRequest) {
         JwtInfo jwtInfo = jwtChecker.checkToken(httpRequest);
-        if (!isValidAdmin(jwtInfo)) {
+        if (jwtInfo == null || !isValidAdmin(jwtInfo)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         try {
@@ -96,6 +111,7 @@ public class ClaimController {
     }
 
     private boolean isValidAdmin(JwtInfo jwtInfo) {
-        return jwtInfo != null && jwtInfo.getRole() != null && jwtInfo.getRole().equals("ADMIN");
+        System.out.println("HERE: " + jwtInfo.getRole());
+        return jwtInfo.getRole() != null && jwtInfo.getRole().equals("ADMIN");
     }
 }

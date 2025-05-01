@@ -34,7 +34,6 @@ public class MusicResourceController {
     @GetMapping("/by-producer")
     @PreAuthorize("hasAuthority('USER')")
     ResponseEntity<List<MusicResource>> findMusicResourcesByProducer(Authentication authentication) {
-        System.out.println("HERE: " + authentication.getName());
         return producerService.findByEmail(authentication.getName())
                 .map(producer -> ResponseEntity.ok(musicResourceService.getProducersResources(producer)))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
@@ -60,6 +59,32 @@ public class MusicResourceController {
                                                Authentication authentication) {
         if (musicResourceService.isOwner(id, authentication.getName())) {
             musicResourceService.unavailableMusicResource(id);
+            return ResponseEntity.ok().build();
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+    }
+
+    @PutMapping("/{id}/available")
+    @PreAuthorize("hasAuthority('USER')")
+    ResponseEntity<?> availableMusicResource(@PathVariable Long id,
+                                               Authentication authentication) {
+        if (musicResourceService.isOwner(id, authentication.getName())) {
+            musicResourceService.availableMusicResource(id);
+            return ResponseEntity.ok().build();
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+    }
+
+    @PutMapping("/{id}/delete")
+    @PreAuthorize("hasAuthority('USER')")
+    ResponseEntity<?> deleteMusicResource(@PathVariable Long id,
+                                             Authentication authentication) {
+        if (musicResourceService.isOwner(id, authentication.getName())) {
+            musicResourceService.deleteMusicResource(id);
             return ResponseEntity.ok().build();
         }
         else {

@@ -1,8 +1,12 @@
 export const GENRES = [
     'Pop', 'Rock', 'Jazz', 'Hip-Hop', 'Trap', 'Electronic'
   ];
-  
-  export const TYPES = [
+
+export const TYPES = [
     'Drum Kit', 'Loop Kit', 'Loop', 'Midi Kit', 'Preset Bank', 'One Shots'
+  ];
+
+export const DESTINATION = [
+    'Банковский счет', 'Электронный кошелек'
   ];
   

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import styles from '../styles/ListProducerPage.module.css'; // Импорт стилей как модуля
+import styles from '../styles/ListProducerPage.module.css';
 
 const ProducerCard = ({ producer }) => {
   const navigate = useNavigate();
@@ -32,27 +32,47 @@ const ProducerCard = ({ producer }) => {
 
 const ListProducerPage = () => {
   const [producers, setProducers] = useState([]);
+  const [searchNickname, setSearchNickname] = useState('');
+
+  const fetchProducers = async (nickname = '') => {
+    try {
+      const res = await axios.get(
+        `${process.env.REACT_APP_API_GATEWAY_SERVER_URL}/mcs/api/v1/producer/`,
+        { params: nickname ? { nickname } : {} }
+      );
+      setProducers(res.data);
+    } catch (err) {
+      console.error('Ошибка при загрузке данных продюсеров:', err);
+    }
+  };
 
   useEffect(() => {
-    const fetchProducers = async () => {
-      try {
-        const res = await axios.get(
-          `${process.env.REACT_APP_API_GATEWAY_SERVER_URL}/mcs/api/v1/producer/`
-        );
-        setProducers(res.data);
-      } catch (err) {
-        console.error('Ошибка при загрузке данных продюсеров:', err);
-      }
-    };
-
     fetchProducers();
   }, []);
+
+  const handleSearch = () => {
+    fetchProducers(searchNickname.trim());
+  };
 
   return (
     <div className={styles.layout}>
       <Navbar />
       <main className={styles['main-content']}>
         <h1 className={styles['title']}>Продюсеры</h1>
+
+        <div className={styles['search-bar']}>
+          <input
+            type="text"
+            placeholder="Введите никнейм"
+            value={searchNickname}
+            onChange={(e) => setSearchNickname(e.target.value)}
+            className={styles['search-input']}
+          />
+          <button onClick={handleSearch} className={styles['search-button']}>
+            Поиск
+          </button>
+        </div>
+
         <div className={styles['producer-list']}>
           {producers.map((producer) => (
             <ProducerCard key={producer.id} producer={producer} />

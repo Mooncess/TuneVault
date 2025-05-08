@@ -13,4 +13,5 @@ public interface ProducerRepository extends JpaRepository<Producer, Long> {
     Optional<Producer> findByEmail(String email);
     List<Producer> findAllByNicknameContainingIgnoreCase(String nicknamePart);
     List<Producer> findAllByUserStatus(UserStatus userStatus);
+    List<Producer> findAllByNicknameContainingIgnoreCaseAndUserStatus(String nicknamePart, UserStatus userStatus);
 }

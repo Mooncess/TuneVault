@@ -26,4 +26,14 @@ public class WithdrawController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @GetMapping("/find-by-producer")
+    @PreAuthorize("hasAuthority('USER')")
+    ResponseEntity<?> findAllByProducer(Authentication authentication) {
+        try {
+            return ResponseEntity.ok(withdrawService.findAllByProducer(authentication.getName()));
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

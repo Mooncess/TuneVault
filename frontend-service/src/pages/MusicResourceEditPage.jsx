@@ -22,6 +22,7 @@ const MusicResourceEditPage = () => {
   const [demo, setDemo] = useState(null);
   const [source, setSource] = useState(null);
   const [status, setStatus] = useState("");
+  const [authors, setAuthors] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,7 +44,22 @@ const MusicResourceEditPage = () => {
       }
     };
 
-    if (id) fetchData();
+    const fetchAuthors = async () => {
+      try {
+        const res = await axiosInstance.get(
+          `${process.env.REACT_APP_API_GATEWAY_SERVER_URL}/mcs/api/v1/music-resource/${id}/authors`,
+          { withCredentials: true }
+        );
+        setAuthors(res.data);
+      } catch (err) {
+        console.error("Ошибка при загрузке авторов:", err);
+      }
+    };
+
+    if (id) {
+      fetchData();
+      fetchAuthors();
+    }
   }, [id]);
 
   const handleInfoSubmit = async (e) => {
@@ -109,41 +125,7 @@ const MusicResourceEditPage = () => {
       setStatus("UNAVAILABLE");
       alert("Ресурс сделан недоступным");
     } catch (err) {
-      console.error("Ошибка при закрытии доступа:", err);
-      alert("Ошибка при закрытии доступа к ресурсу.");
-    }
-  };
-
-  const handleSetAvailable = async () => {
-    try {
-      await axiosInstance.put(
-        `${process.env.REACT_APP_API_GATEWAY_SERVER_URL}/mcs/api/v1/music-resource/${id}/available`,
-        {},
-        { withCredentials: true }
-      );
-      setStatus("AVAILABLE");
-      alert("Ресурс сделан доступным");
-    } catch (err) {
-      console.error("Ошибка при открытии доступа:", err);
-      alert("Ошибка при открытии доступа к ресурсу.");
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!window.confirm("Вы уверены, что хотите удалить ресурс?")) return;
-
-    try {
-      await axiosInstance.put(
-        `${process.env.REACT_APP_API_GATEWAY_SERVER_URL}/mcs/api/v1/music-resource/${id}/delete`,
-        {},
-        { withCredentials: true }
-      );
-      setStatus("DELETED");
-      alert("Ресурс удален");
-      navigate("/profile");
-    } catch (err) {
-      console.error("Ошибка при удалении:", err);
-      alert("Ошибка при удалении.");
+      console.error("Ошибка при установке ресурса недоступным", err);
     }
   };
 
@@ -152,43 +134,12 @@ const MusicResourceEditPage = () => {
       <Navbar />
       <main className={styles["main-content"]}>
         <div className={styles["create-page"]}>
-          <h1 className={styles.title}>Редактировать музыкальный ресурс</h1>
+          <h1 className={styles["title"]}>Редактировать музыкальный ресурс</h1>
 
-          <p className={styles["subheading"]}>
-            <strong>Статус:</strong> {status}
-          </p>
-
-          <div style={{ marginBottom: "24px" }}>
-            <button
-              className={styles["submit-button"]}
-              style={{ marginRight: "16px" }}
-              type="button"
-              onClick={handleSetAvailable}
-            >
-              Открыть доступ
-            </button>
-            <button
-              className={styles["submit-button"]}
-              style={{ marginRight: "16px" }}
-              type="button"
-              onClick={handleSetUnavailable}
-            >
-              Закрыть доступ
-            </button>
-            <button
-              className={styles["submit-button"]}
-              style={{ marginRight: "16px" }}
-              type="button"
-              onClick={handleDelete}
-            >
-              Удалить
-            </button>
-          </div>
-
-          {/* Форма обновления описания */}
           <form onSubmit={handleInfoSubmit}>
             <input
               className={styles["input-field"]}
+              name="name"
               type="text"
               placeholder="Название"
               value={name}
@@ -197,6 +148,7 @@ const MusicResourceEditPage = () => {
             />
             <select
               className={styles["input-field"]}
+              name="genre"
               value={genre}
               onChange={(e) => setGenre(e.target.value)}
               required
@@ -210,6 +162,7 @@ const MusicResourceEditPage = () => {
             </select>
             <input
               className={styles["input-field"]}
+              name="price"
               type="number"
               placeholder="Цена"
               value={price}
@@ -218,9 +171,9 @@ const MusicResourceEditPage = () => {
             />
             <select
               className={styles["input-field"]}
+              name="type"
               value={type}
-              onChange={(e) => setType(e.target.value)}
-              required
+              disabled
             >
               <option value="">Выберите тип</option>
               {TYPES.map((t) => (
@@ -234,6 +187,7 @@ const MusicResourceEditPage = () => {
               <>
                 <input
                   className={styles["input-field"]}
+                  name="bpm"
                   type="number"
                   placeholder="BPM"
                   value={bpm}
@@ -242,6 +196,7 @@ const MusicResourceEditPage = () => {
                 />
                 <input
                   className={styles["input-field"]}
+                  name="key"
                   type="text"
                   placeholder="Тональность"
                   value={key}
@@ -252,29 +207,49 @@ const MusicResourceEditPage = () => {
             )}
 
             <button type="submit" className={styles["submit-button"]}>
-              Сохранить описание
+              Обновить описание
             </button>
           </form>
 
-          {/* Форма обновления файлов */}
-          <form onSubmit={handleFileSubmit} style={{ marginTop: "32px" }}>
+          <form onSubmit={handleFileSubmit}>
             <div className={styles["file-upload"]}>
-              <label className={styles["file-label"]}>Обложка (опционально)</label>
+              <label className={styles["file-label"]}>Обложка</label>
               <input type="file" accept="image/*" onChange={(e) => setCover(e.target.files[0])} />
             </div>
             <div className={styles["file-upload"]}>
-              <label className={styles["file-label"]}>Демо-трек (опционально)</label>
+              <label className={styles["file-label"]}>Демо-трек</label>
               <input type="file" accept="audio/*" onChange={(e) => setDemo(e.target.files[0])} />
             </div>
             <div className={styles["file-upload"]}>
-              <label className={styles["file-label"]}>Исходник (опционально)</label>
+              <label className={styles["file-label"]}>Исходник</label>
               <input type="file" onChange={(e) => setSource(e.target.files[0])} />
             </div>
 
             <button type="submit" className={styles["submit-button"]}>
-              Сохранить файлы
+              Обновить файлы
             </button>
           </form>
+
+          {status !== "UNAVAILABLE" && (
+            <button onClick={handleSetUnavailable} className={styles["submit-button"]}>
+              Сделать недоступным
+            </button>
+          )}
+
+          <div className={styles["authors-section"]}>
+            <h3 className={styles["subheading"]}>Авторы</h3>
+            {authors.length === 0 ? (
+              <p>Нет данных об авторах.</p>
+            ) : (
+              <ul>
+                {authors.map((author, idx) => (
+                  <li key={idx}>
+                    {author.producer.email} — {author.percentageOfSale}%
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
       </main>
       <Footer />

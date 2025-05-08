@@ -24,7 +24,7 @@ public class SaleController {
         }
     }
 
-    @PostMapping("/confirm/{id}")
+    @PutMapping("/confirm/{id}")
     ResponseEntity<?> confirm(@PathVariable Long id) {
         saleService.confirm(id);
         return ResponseEntity.ok().build();

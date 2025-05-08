@@ -41,52 +41,68 @@ const AdminPanelPage = () => {
     navigate(`/admin/claim/${id}`);
   };
 
+  const handleLogout = async () => {
+    try {
+      await axiosInstance.get(
+        `${process.env.REACT_APP_API_GATEWAY_SERVER_URL}/auth/api/v1/logout`,
+        { withCredentials: true }
+      );
+      navigate('/admin/login');
+    } catch (err) {
+      console.error('Ошибка при выходе:', err);
+    }
+  };
+
   return (
     <div>
-        <MyNavbar />
-    
-    <div className={styles.container}>
-      <h1 className={styles.title}>Панель администратора — Жалобы</h1>
+      <MyNavbar />
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <h1 className={styles.title}>Панель администратора — Жалобы</h1>
+          <button className={styles.logoutButton} onClick={handleLogout}>
+            Выйти
+          </button>
+        </div>
 
-      <div className={styles.buttonGroup}>
-        <button
-          className={`${styles.button} ${statusFilter === 0 ? styles.active : ''}`}
-          onClick={() => handleStatusChange(0)}
-        >
-          Не обработаны
-        </button>
-        <button
-          className={`${styles.button} ${statusFilter === 1 ? styles.active : ''}`}
-          onClick={() => handleStatusChange(1)}
-        >
-          Рассмотрены
-        </button>
-        <button
-          className={`${styles.button} ${statusFilter === 2 ? styles.active : ''}`}
-          onClick={() => handleStatusChange(2)}
-        >
-          Приняты
-        </button>
-        <button className={styles.button} onClick={toggleSortOrder}>
-          Сортировка: {sortOrder === 0 ? '↑ по дате' : '↓ по дате'}
-        </button>
-      </div>
-
-      <ul className={styles.list}>
-        {claims.map((claim) => (
-          <li
-            key={claim.id}
-            className={styles.listItem}
-            onClick={() => handleClaimClick(claim.id)}
+        <div className={styles.buttonGroup}>
+          <button
+            className={`${styles.button} ${statusFilter === 0 ? styles.active : ''}`}
+            onClick={() => handleStatusChange(0)}
           >
-            <p><strong>ID:</strong> {claim.id}</p>
-            <p><strong>Email отправителя:</strong> {claim.senderEmail}</p>
-            <p><strong>Описание:</strong> {claim.description}</p>
-            <p><strong>Дата создания:</strong> {claim.createdDate}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
+            Не обработаны
+          </button>
+          <button
+            className={`${styles.button} ${statusFilter === 1 ? styles.active : ''}`}
+            onClick={() => handleStatusChange(1)}
+          >
+            Рассмотрены
+          </button>
+          <button
+            className={`${styles.button} ${statusFilter === 2 ? styles.active : ''}`}
+            onClick={() => handleStatusChange(2)}
+          >
+            Приняты
+          </button>
+          <button className={styles.button} onClick={toggleSortOrder}>
+            Сортировка: {sortOrder === 0 ? '↑ по дате' : '↓ по дате'}
+          </button>
+        </div>
+
+        <ul className={styles.list}>
+          {claims.map((claim) => (
+            <li
+              key={claim.id}
+              className={styles.listItem}
+              onClick={() => handleClaimClick(claim.id)}
+            >
+              <p><strong>ID:</strong> {claim.id}</p>
+              <p><strong>Email отправителя:</strong> {claim.senderEmail}</p>
+              <p><strong>Описание:</strong> {claim.description}</p>
+              <p><strong>Дата создания:</strong> {claim.createdDate}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };

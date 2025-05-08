@@ -31,7 +31,6 @@ public class ProducerController {
     ResponseEntity<List<Producer>> findAllUserProducers(@RequestParam(required = false) String nickname) {
         if (nickname == null) return ResponseEntity.ok(producerService.findAllUserProducers());
         else return ResponseEntity.ok(producerService.findProducersByNicknamePart(nickname));
-
     }
 
     @GetMapping("/{id}")

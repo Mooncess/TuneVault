@@ -44,7 +44,7 @@ const Catalog = () => {
       );
       const data = await response.json();
       setMusicItems(data.content);
-      setTotalPages(data.totalPages);
+      setTotalPages(data.content.length > 0 ? data.totalPages : 1); // Если нет элементов, отображаем 1 страницу
     } catch (error) {
       console.error('Ошибка загрузки данных:', error);
     }

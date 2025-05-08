@@ -66,3 +66,40 @@ footer {
   text-align: center;
   color: white;
 }
+
+.search-bar {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+
+.search-input {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: none;
+  font-size: 1rem;
+  width: 250px;
+  background-color: rgb(0, 0, 0);
+  color: white;
+  border: 1px solid rgb(29, 205, 159);
+}
+
+.search-input::placeholder {
+  color: rgb(150, 150, 150);
+}
+
+.search-button {
+  padding: 0.5rem 1.2rem;
+  background-color: rgb(29, 205, 159);
+  border: none;
+  border-radius: 8px;
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.search-button:hover {
+  background-color: rgb(22, 153, 118);
+}

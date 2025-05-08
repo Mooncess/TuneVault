@@ -15,6 +15,7 @@ import MusicResourceEditPage from "./pages/MusicResourceEditPage";
 import ProducerDetailPage from "./pages/ProducerDetailPage";
 import AdminLoginPage from "./pages/AdminLoginPage";
 import ClaimPage from './pages/ClaimPage';
+import BalanceHistoryPage from './pages/BalanceHistoryPage';
 
 axios.defaults.withCredentials = true;
 
@@ -36,6 +37,7 @@ function App() {
         <Route path="/music-resource-managment/edit" element={<MusicResourceEditPage />} />
         <Route path="/producer/:id" element={<ProducerDetailPage />} />
         <Route path="/admin/claim/:id" element={<ClaimPage />} />
+        <Route path="/my-balance" element={<BalanceHistoryPage />} />
       </Routes>
     </Router>
   );

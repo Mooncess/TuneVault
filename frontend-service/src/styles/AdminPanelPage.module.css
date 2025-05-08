@@ -59,4 +59,25 @@
   .listItem p {
     margin: 4px 0;
   }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .logoutButton {
+    background-color: rgb(29, 205, 159);
+    color: black;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  
+  .logoutButton:hover {
+    background-color: rgb(22, 153, 118);
+  }
+  
   

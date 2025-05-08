@@ -32,7 +32,7 @@ public class RevenueService {
 
     public List<Revenue> findAllByProducer(String email) {
         try {
-            return revenueRepository.findAllByProducerId(mediaCatalogServClient
+            return revenueRepository.findAllByProducerIdOrderBySaleDateDesc(mediaCatalogServClient
                     .getProducerIdByEmail(email, secretApiKey).getBody());
         } catch (Exception e) {
             System.err.println(e.getMessage());

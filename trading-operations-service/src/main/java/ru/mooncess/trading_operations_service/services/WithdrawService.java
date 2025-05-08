@@ -3,6 +3,7 @@ package ru.mooncess.trading_operations_service.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.mooncess.trading_operations_service.client.MediaCatalogServClient;
 import ru.mooncess.trading_operations_service.entities.ProducerBalance;
 import ru.mooncess.trading_operations_service.entities.Withdraw;
@@ -10,6 +11,7 @@ import ru.mooncess.trading_operations_service.repositories.WithdrawRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +27,7 @@ public class WithdrawService {
     @Value("${mcs.api.key}")
     private String secretApiKey;
 
+    @Transactional
     public void createWithdraw(String email, BigDecimal amount, String destination) throws RuntimeException {
         Long producerId;
 
@@ -53,6 +56,16 @@ public class WithdrawService {
             withdrawRepository.save(withdraw);
             String message = "The amount has been successfully withdrawn from your Tune Vault balance: " + amount;
             messageSender.sendEmailMessage(email, msgSubject, message);
+        }
+    }
+
+    public List<Withdraw> findAllByProducer(String email) {
+        try {
+            return withdrawRepository.findAllByProducerIdOrderByWithdrawDateDesc(mediaCatalogServClient
+                    .getProducerIdByEmail(email, secretApiKey).getBody());
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            throw new RuntimeException();
         }
     }
 }

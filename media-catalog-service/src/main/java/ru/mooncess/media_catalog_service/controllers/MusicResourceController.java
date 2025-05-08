@@ -8,8 +8,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import ru.mooncess.media_catalog_service.dto.UpdateMusicResourceInfo;
+import ru.mooncess.media_catalog_service.entities.Author;
 import ru.mooncess.media_catalog_service.entities.MusicResource;
 import ru.mooncess.media_catalog_service.filter.MusicResourceFilter;
+import ru.mooncess.media_catalog_service.filter.ProducerMusicResourceFilter;
 import ru.mooncess.media_catalog_service.services.AuthorService;
 import ru.mooncess.media_catalog_service.services.MusicResourceService;
 import ru.mooncess.media_catalog_service.services.ProducerService;
@@ -23,6 +25,11 @@ public class MusicResourceController {
     private final MusicResourceService musicResourceService;
     private final ProducerService producerService;
     private final AuthorService authorService;
+
+    @GetMapping("/{id}/authors")
+    ResponseEntity<List<Author>> getAuthorsOfMusicResource(@PathVariable Long id) {
+        return ResponseEntity.ok(authorService.findAuthorsOfResource(id));
+    }
 
     @GetMapping("/by-producer/{id}")
     ResponseEntity<List<MusicResource>> findMusicResourcesByProducerId(@PathVariable Long id) {
@@ -127,5 +134,29 @@ public class MusicResourceController {
         filter.setSort(sort);
 
         return ResponseEntity.ok(musicResourceService.findFiltered(filter));
+    }
+
+    @GetMapping("/by-producer/{producerId}/filtered")
+    public ResponseEntity<Page<MusicResource>> getFilteredResourcesByProducer(
+            @PathVariable Long producerId,
+            @RequestParam(required = false) String genre,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) String type,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "name,asc") String sort) {
+
+        ProducerMusicResourceFilter filter = new ProducerMusicResourceFilter();
+        filter.setProducer(producerService.findById(producerId).orElse(null));
+        filter.setGenre(genre);
+        filter.setMinPrice(minPrice);
+        filter.setMaxPrice(maxPrice);
+        filter.setType(type);
+        filter.setPage(page);
+        filter.setSize(size);
+        filter.setSort(sort);
+
+        return ResponseEntity.ok(musicResourceService.findProducerFiltered(filter));
     }
 }

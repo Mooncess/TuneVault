@@ -92,7 +92,7 @@ public class ProducerService {
     }
 
     public List<Producer> findProducersByNicknamePart(String nicknamePart) {
-        return producerRepository.findAllByNicknameContainingIgnoreCase(nicknamePart);
+        return producerRepository.findAllByNicknameContainingIgnoreCaseAndUserStatus(nicknamePart, UserStatus.ACTIVE);
     }
 
     public void strike(Producer producer) {

@@ -18,6 +18,8 @@ import ru.mooncess.media_catalog_service.entities.MusicResource;
 import ru.mooncess.media_catalog_service.entities.Producer;
 import ru.mooncess.media_catalog_service.filter.MusicResourceFilter;
 import ru.mooncess.media_catalog_service.filter.MusicResourceSpecifications;
+import ru.mooncess.media_catalog_service.filter.ProducerMusicResourceFilter;
+import ru.mooncess.media_catalog_service.filter.ProducerMusicResourceSpecifications;
 import ru.mooncess.media_catalog_service.mappers.MusicResourceMapper;
 import ru.mooncess.media_catalog_service.repositories.MusicResourceRepository;
 
@@ -75,6 +77,20 @@ public class MusicResourceService {
 
     public Page<MusicResource> findFiltered(MusicResourceFilter filter) {
         Specification<MusicResource> spec = MusicResourceSpecifications.buildSpecification(filter);
+
+        String[] sortParams = filter.getSort().split(",");
+        Sort sort = Sort.by(
+                Sort.Direction.fromString(sortParams[1]),
+                sortParams[0]
+        );
+
+        Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize(), sort);
+
+        return repository.findAll(spec, pageable);
+    }
+
+    public Page<MusicResource> findProducerFiltered(ProducerMusicResourceFilter filter) {
+        Specification<MusicResource> spec = ProducerMusicResourceSpecifications.buildSpecification(filter);
 
         String[] sortParams = filter.getSort().split(",");
         Sort sort = Sort.by(

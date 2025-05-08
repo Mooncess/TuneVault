@@ -111,7 +111,6 @@ public class ClaimController {
     }
 
     private boolean isValidAdmin(JwtInfo jwtInfo) {
-        System.out.println("HERE: " + jwtInfo.getRole());
         return jwtInfo.getRole() != null && jwtInfo.getRole().equals("ADMIN");
     }
 }

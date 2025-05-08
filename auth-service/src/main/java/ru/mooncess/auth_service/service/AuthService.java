@@ -27,7 +27,7 @@ public class AuthService {
         System.out.println("HERE " + authRequest.getLogin());
         final User user = userService.findByUsername(authRequest.getLogin())
                 .orElseThrow(() -> new AuthException("The user was not found"));
-        if (user.getStatus().equals(Status.INACTIVE) || user.getStatus().equals(Status.BLOCKED) || !user.getRole().equals(Role.ADMIN)) throw new AuthException("Access to the account is prohibited");
+        if (user.getStatus().equals(Status.INACTIVE) || user.getStatus().equals(Status.BLOCKED) || !user.getRole().equals(R.ole.ADMIN)) throw new AuthException("Access to the account is prohibited");
         if (SecurityConfig.passwordEncoder().matches(authRequest.getPassword(), user.getPassword())) {
             final String accessToken = jwtProvider.generateAccessToken(user);
             System.out.println(user.getStatus());

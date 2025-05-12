@@ -6,6 +6,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.mooncess.admin_panel_service.client.FileServiceClient;
 import ru.mooncess.admin_panel_service.client.MediaCatalogClient;
 import ru.mooncess.admin_panel_service.dto.CreateClaimDto;
@@ -34,6 +35,7 @@ public class ClaimService {
         claim.setMusicResourceId(createClaimDto.getMusicResourceId());
         claim.setStatus(ClaimStatus.NOT_PROCESSED);
         claim.setCreatedDate(LocalDateTime.now());
+        claim.setProducerId(createClaimDto.getProducerId());
 
         claimRepository.save(claim);
     }
@@ -51,6 +53,10 @@ public class ClaimService {
             case 2 -> {
                 if (sort == 0) return claimRepository.findAllByStatus(ClaimStatus.ACCEPTED, Sort.by("createdDate").ascending());
                 else return claimRepository.findAllByStatus(ClaimStatus.ACCEPTED, Sort.by("createdDate").descending());
+            }
+            case 3 -> {
+                if (sort == 0) return claimRepository.findAllByStatus(ClaimStatus.BLOCK, Sort.by("createdDate").ascending());
+                else return claimRepository.findAllByStatus(ClaimStatus.BLOCK, Sort.by("createdDate").descending());
             }
             default -> {
                 return null;
@@ -94,6 +100,25 @@ public class ClaimService {
         }
 
         claim.setStatus(ClaimStatus.ACCEPTED);
+        claimRepository.save(claim);
+    }
+
+    @Transactional
+    public void setClaimBlockStatus(Long claimId) {
+        Claim claim = claimRepository.findById(claimId)
+                .orElseThrow(() -> new RuntimeException("Claim not found with id: " + claimId));
+
+        try {
+            ResponseEntity<?> response = mediaCatalogClient.blockProducer(claim.getProducerId(), secretApiKey);
+            if (claim.getMusicResourceId() != null) {
+                if (response.getStatusCode() == HttpStatus.OK) fileServiceClient.deleteMusicResource((MusicFileURI) response.getBody(), secretApiKey);
+            }
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            throw new RuntimeException("Couldn't send request to other services");
+        }
+
+        claim.setStatus(ClaimStatus.BLOCK);
         claimRepository.save(claim);
     }
 

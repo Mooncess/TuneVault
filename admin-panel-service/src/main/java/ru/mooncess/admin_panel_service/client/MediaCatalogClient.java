@@ -14,4 +14,8 @@ public interface MediaCatalogClient {
     @PutMapping("/internal/mcs/api/v1/music-resource/strike")
     ResponseEntity<MusicFileURI> strikeAndDelete(@RequestParam Long id,
                                                  @RequestHeader("X-API-Key") String apiKey);
+
+    @PutMapping("/internal/mcs/api/v1/producer/block")
+    ResponseEntity<?> blockProducer(@RequestParam Long producerId,
+                                    @RequestHeader("X-API-Key") String apiKey);
 }

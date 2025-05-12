@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import MyNavbar from '../components/Navbar';
 import MyFooter from '../components/Footer';
 import MusicCard from '../components/MusicCard';
+import ClaimModal from '../components/ClaimModal';
 import { GENRES, TYPES } from '../config/MusicOptions';
 import styles from '../styles/ProducerDetailPage.module.css';
 
@@ -24,6 +25,7 @@ const ProducerDetailPage = () => {
   const [playingId, setPlayingId] = useState(null);
   const [filters, setFilters] = useState(initialFilters);
   const [totalPages, setTotalPages] = useState(1);
+  const [showClaimModal, setShowClaimModal] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -75,7 +77,7 @@ const ProducerDetailPage = () => {
   }, [filters.page, filters.size, filters.sort]);
 
   if (!producer) {
-    return <div>Загрузка...</div>; // Показываем индикатор загрузки, пока данные не получены
+    return <div>Загрузка...</div>;
   }
 
   return (
@@ -190,6 +192,24 @@ const ProducerDetailPage = () => {
             Вперед &rarr;
           </button>
         </div>
+
+        {/* Кнопка "Пожаловаться" */}
+        <div style={{ textAlign: 'center', marginTop: '40px' }}>
+          <button
+            className={styles['search-button']}
+            onClick={() => setShowClaimModal(true)}
+          >
+            Пожаловаться
+          </button>
+        </div>
+
+        {showClaimModal && (
+          <ClaimModal
+            musicId={null}
+            producerId={id}
+            onClose={() => setShowClaimModal(false)}
+          />
+        )}
       </main>
       <MyFooter />
     </div>

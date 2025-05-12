@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 public enum ClaimStatus {
     NOT_PROCESSED("NOT_PROCESSED"),
     ACCEPTED("ACCEPTED"),
+    BLOCK("BLOCK"),
     REVIEWED("REVIEWED");
     private final String vale;
 }

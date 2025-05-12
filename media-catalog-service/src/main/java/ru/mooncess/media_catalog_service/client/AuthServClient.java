@@ -9,4 +9,8 @@ public interface AuthServClient {
     @PutMapping("/auth/api/v1/admin/strike")
     ResponseEntity<Boolean> strikeAndDelete(@RequestParam Long id,
                                             @RequestHeader("X-API-Key") String apiKey);
+
+    @PutMapping("/auth/api/v1/admin/block")
+    ResponseEntity<Void> blockUser(@RequestParam Long id,
+                                   @RequestHeader("X-API-Key") String apiKey);
 }

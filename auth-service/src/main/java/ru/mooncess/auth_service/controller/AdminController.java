@@ -54,6 +54,23 @@ public class AdminController {
         }
     }
 
+    @PutMapping("/block")
+    ResponseEntity<Void> blockUser(@RequestParam Long id,
+                                   @RequestHeader("X-API-Key") String apiKey) {
+        if (!isValidApiKey(apiKey)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        try {
+            userService.block(id);
+            return ResponseEntity.ok().build();
+        }
+        catch (Exception e) {
+            System.err.println(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
     private boolean isValidApiKey(String apiKey) {
         return secretApiKey.equals(apiKey);
     }

@@ -93,6 +93,23 @@ public class ClaimController {
         }
     }
 
+    @PutMapping("/{claimId}/block")
+    ResponseEntity<?> blockProducerFromClaim(@PathVariable Long claimId,
+                                             HttpServletRequest httpRequest) {
+        JwtInfo jwtInfo = jwtChecker.checkToken(httpRequest);
+        if (jwtInfo == null || !isValidAdmin(jwtInfo)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        try {
+            claimService.setClaimBlockStatus(claimId);
+            return ResponseEntity.ok().build();
+        }
+        catch (Exception e) {
+            System.err.println(e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @PutMapping("/{claimId}/review")
     ResponseEntity<?> reviewClaim(@PathVariable Long claimId,
                                   HttpServletRequest httpRequest) {

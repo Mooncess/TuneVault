@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styles from '../styles/EditProfileModal.module.css';
 import axios from 'axios';
 
-const ClaimModal = ({ musicId, onClose }) => {
+const ClaimModal = ({ musicId, producerId, onClose }) => {
   const [email, setEmail] = useState('');
   const [description, setDescription] = useState('');
   const [error, setError] = useState('');
@@ -15,11 +15,13 @@ const ClaimModal = ({ musicId, onClose }) => {
     }
 
     try {
+      console.log(producerId);
       const res = await axios.post(
         `${process.env.REACT_APP_API_GATEWAY_SERVER_URL}/aps/api/v1/claim/create`,
         {
           senderEmail: email,
           musicResourceId: musicId,
+          producerId: producerId,
           description,
         }
       );

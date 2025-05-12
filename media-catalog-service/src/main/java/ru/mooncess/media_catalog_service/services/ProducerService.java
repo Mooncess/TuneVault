@@ -98,22 +98,7 @@ public class ProducerService {
     public void strike(Producer producer) {
         try {
             if (authServClient.strikeAndDelete(producer.getId(), secretApiKey).getBody()) {
-                producer.setUserStatus(UserStatus.BLOCKED);
-                producerRepository.save(producer);
-
-                List<MusicResource> list = musicResourceRepository.findAllByProducer(producer);
-
-                list.forEach(i -> {
-                    if (!i.getStatus().equals(MusicResourceStatus.AVAILABLE)) {
-                        i.setStatus(MusicResourceStatus.UNAVAILABLE);
-                        musicResourceRepository.save(i);
-                    }
-                });
-
-                String message = "Your resource has been removed from our platform due to a violation of our Terms of Service or Community Guidelines. Repeated violations may result in additional penalties, including temporary suspension or permanent termination of your account.\n\nTo avoid further action, please review our policies before uploading new content.";
-                messageSender.sendEmailMessage(producer.getEmail(), msgSubject, message);
-                message = "Due to numerous violations of the rules of the site, your account has been blocked.";
-                messageSender.sendEmailMessage(producer.getEmail(), msgSubject, message);
+                blockProducer(producer);
             }
             else {
                 String message = "Your resource has been removed from our platform due to a violation of our Terms of Service or Community Guidelines. Repeated violations may result in additional penalties, including temporary suspension or permanent termination of your account.\n\nTo avoid further action, please review our policies before uploading new content.";
@@ -123,6 +108,27 @@ public class ProducerService {
             System.err.println(e.getMessage());
             throw new RuntimeException("Error when sending a request to another service");
         }
+    }
+
+    public void blockProducer(Producer producer) {
+        producer.setUserStatus(UserStatus.BLOCKED);
+        producerRepository.save(producer);
+
+        authServClient.blockUser(producer.getId(), secretApiKey);
+
+        List<MusicResource> list = musicResourceRepository.findAllByProducer(producer);
+
+        list.forEach(i -> {
+            if (!i.getStatus().equals(MusicResourceStatus.AVAILABLE)) {
+                i.setStatus(MusicResourceStatus.UNAVAILABLE);
+                musicResourceRepository.save(i);
+            }
+        });
+
+        String message = "Your resource has been removed from our platform due to a violation of our Terms of Service or Community Guidelines. Repeated violations may result in additional penalties, including temporary suspension or permanent termination of your account.\n\nTo avoid further action, please review our policies before uploading new content.";
+        messageSender.sendEmailMessage(producer.getEmail(), msgSubject, message);
+        message = "Due to numerous violations of the rules of the site, your account has been blocked.";
+        messageSender.sendEmailMessage(producer.getEmail(), msgSubject, message);
     }
 
     public void save(Producer producer) {

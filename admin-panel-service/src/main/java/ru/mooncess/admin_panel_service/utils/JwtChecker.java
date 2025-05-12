@@ -28,8 +28,6 @@ public final class JwtChecker {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         final String token = getTokenFromRequest(httpRequest);
 
-        System.out.println(token);
-
         if (token != null && validateToken(token)) {
             final Claims claims = getClaims(token);
             return createJwtInfoToken(claims);

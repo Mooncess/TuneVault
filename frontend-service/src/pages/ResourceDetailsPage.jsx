@@ -128,6 +128,7 @@ const ResourceDetailsPage = () => {
       {isClaimOpen && (
         <ClaimModal
           musicId={music.id}
+          producerId={music.producer.id}
           onClose={() => setIsClaimOpen(false)}
         />
       )}

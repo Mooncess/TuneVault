@@ -126,4 +126,13 @@ public class UserService {
         user.setStatus(Status.INACTIVE);
         userRepository.save(user);
     }
+
+    public void block(Long id) {
+        var user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+
+        user.setStatus(Status.BLOCKED);
+        userRepository.save(user);
+        redisService.delete(user.getUsername());
+    }
 }

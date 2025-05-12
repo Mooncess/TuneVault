@@ -23,5 +23,6 @@ public class Claim {
     @Enumerated(EnumType.STRING)
     private ClaimStatus status;
     private Long musicResourceId;
+    private Long producerId;
     private String description;
 }

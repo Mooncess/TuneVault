@@ -74,6 +74,24 @@ public class InternalProducerController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @PutMapping("/block")
+    ResponseEntity<?> blockProducer(@RequestParam Long producerId,
+                                    @RequestHeader("X-API-Key") String apiKey) {
+        if (!isValidApiKey(apiKey)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        try {
+            producerService.blockProducer(producerService.findById(producerId)
+                    .orElseThrow(() -> new RuntimeException("Producer Not Found with ID: " + producerId)));
+        }
+        catch (Exception e) {
+            System.err.println(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
     private boolean isValidApiKey(String apiKey) {
         return secretApiKey.equals(apiKey);
     }

@@ -11,8 +11,9 @@ public class CreateClaimDto {
     @Email
     @NotNull
     private String senderEmail;
-    @NotNull
     private Long musicResourceId;
+    @NotNull
+    private Long producerId;
     @NotNull
     private String description;
 }
